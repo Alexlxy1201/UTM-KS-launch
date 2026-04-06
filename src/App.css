@@ -1,0 +1,596 @@
+.shell {
+  width: min(1360px, calc(100vw - 40px));
+  margin: 0 auto;
+  padding: 32px 0 64px;
+}
+
+.hero-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.95fr);
+  gap: 24px;
+  padding: 40px;
+  border-radius: 36px;
+  background:
+    radial-gradient(circle at top right, rgba(239, 141, 76, 0.24), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(42, 121, 108, 0.22), transparent 34%),
+    linear-gradient(135deg, rgba(255, 250, 244, 0.94), rgba(255, 244, 229, 0.92));
+  border: 1px solid rgba(170, 120, 76, 0.12);
+  box-shadow:
+    0 26px 70px rgba(98, 67, 33, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.hero-copy h1 {
+  margin: 10px 0 16px;
+  font-size: clamp(2.9rem, 5vw, 4.8rem);
+  line-height: 0.95;
+}
+
+.eyebrow,
+.section-tag,
+.mini-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.hero-text {
+  max-width: 58ch;
+  font-size: 1.02rem;
+  color: var(--ink-muted);
+}
+
+.hero-pills,
+.top-nav,
+.cta-row,
+.meal-meta,
+.meal-price-row,
+.search-inline,
+.menu-admin-top,
+.toggle-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.hero-pills {
+  margin-top: 22px;
+}
+
+.hero-pills span,
+.nav-chip,
+.ghost-action,
+.badge,
+.status-pill,
+.table-action,
+.primary-button,
+.secondary-button,
+.notice-close,
+.meal-card,
+.payment-method {
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.hero-pills span {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(160, 111, 63, 0.14);
+}
+
+.hero-brief,
+.meal-grid,
+.payment-methods,
+.summary-strip,
+.metric-grid,
+.summary-board,
+.config-grid,
+.launch-grid,
+.cost-grid,
+.menu-admin-list,
+.view-grid,
+.admin-layout,
+.launch-layout {
+  display: grid;
+  gap: 16px;
+}
+
+.floating-card,
+.summary-strip > div,
+.metric-card,
+.payment-order-card,
+.summary-card,
+.tip-card,
+.upload-box,
+.empty-state,
+.launch-card,
+.cost-card,
+.menu-admin-card {
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(118, 88, 54, 0.08);
+  box-shadow: 0 18px 40px rgba(112, 78, 40, 0.06);
+}
+
+.accent-card,
+.metric-card.highlight {
+  background:
+    radial-gradient(circle at top left, rgba(244, 162, 83, 0.2), transparent 28%),
+    linear-gradient(160deg, rgba(255, 251, 245, 0.95), rgba(255, 244, 228, 0.9));
+}
+
+.floating-card strong,
+.summary-strip strong,
+.metric-card strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 1.2rem;
+  color: var(--ink);
+}
+
+.floating-card p,
+.metric-card p,
+.summary-card p,
+.tip-card p,
+.launch-card p,
+.cost-card p,
+.menu-admin-card p,
+.payment-method p,
+.meal-card p {
+  margin-top: 8px;
+  color: var(--ink-muted);
+}
+
+.top-nav {
+  margin: 24px 0 18px;
+}
+
+.nav-chip,
+.ghost-action,
+.primary-button,
+.secondary-button,
+.notice-close,
+.table-action,
+.meal-card,
+.payment-method {
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.nav-chip,
+.ghost-action {
+  padding: 11px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(86, 66, 44, 0.08);
+  box-shadow: 0 12px 30px rgba(53, 47, 36, 0.05);
+}
+
+.nav-chip.active,
+.primary-button {
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  color: #fff8f0;
+}
+
+.ghost-action {
+  margin-left: auto;
+}
+
+.notice {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 18px 20px;
+  border-radius: 22px;
+  margin-bottom: 22px;
+}
+
+.notice.success {
+  background: rgba(235, 251, 247, 0.92);
+}
+
+.notice.warning {
+  background: rgba(255, 244, 229, 0.92);
+}
+
+.panel {
+  padding: 26px;
+  border-radius: 28px;
+  background: rgba(255, 254, 251, 0.9);
+  border: 1px solid rgba(131, 100, 61, 0.08);
+  box-shadow:
+    0 22px 55px rgba(81, 63, 40, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+.view-grid {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+}
+
+.admin-layout {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+}
+
+.launch-layout {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.single-column {
+  grid-template-columns: 1fr;
+}
+
+.full-span {
+  grid-column: 1 / -1;
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.panel-head h2,
+.summary-card h3 {
+  margin: 6px 0 0;
+}
+
+.panel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.inline-head {
+  margin-bottom: 12px;
+}
+
+.badge,
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.badge.ok {
+  background: rgba(221, 248, 239, 0.95);
+  color: #15634b;
+}
+
+.badge.warn {
+  background: rgba(255, 238, 222, 0.95);
+  color: #9c4c1c;
+}
+
+.badge.accent {
+  background: rgba(236, 246, 255, 0.95);
+  color: #1d5575;
+}
+
+.badge.dark {
+  background: rgba(34, 40, 43, 0.92);
+  color: #fefaf3;
+}
+
+.field-row {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+label {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid rgba(112, 91, 62, 0.14);
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 16px;
+  padding: 13px 15px;
+  font: inherit;
+  color: var(--ink);
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.summary-strip {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 18px;
+}
+
+.summary-strip span,
+.metric-card span,
+.payment-amounts span {
+  display: block;
+  color: var(--ink-soft);
+}
+
+.meal-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.meal-card,
+.payment-method {
+  padding: 18px;
+  border-radius: 24px;
+  text-align: left;
+}
+
+.meal-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 248, 238, 0.88));
+  border: 1px solid rgba(129, 92, 54, 0.09);
+}
+
+.meal-card.active,
+.payment-method.active {
+  border-color: rgba(205, 92, 29, 0.45);
+  box-shadow:
+    0 16px 32px rgba(194, 98, 40, 0.16),
+    inset 0 0 0 1px rgba(205, 92, 29, 0.28);
+}
+
+.meal-category,
+.meal-spicy,
+.order-code {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.cta-row {
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.primary-button,
+.secondary-button {
+  padding: 14px 18px;
+  border-radius: 16px;
+}
+
+.secondary-button,
+.table-action,
+.table-action.ghost {
+  background: rgba(36, 116, 103, 0.12);
+  color: #1b5f55;
+}
+
+.table-action.ghost {
+  background: rgba(38, 52, 70, 0.08);
+  color: #34404d;
+}
+
+.table-action.danger {
+  background: rgba(203, 65, 37, 0.12);
+  color: #a34728;
+}
+
+.payment-order-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.payment-amounts {
+  display: grid;
+  gap: 12px;
+}
+
+.payment-methods,
+.my-order-summary,
+.metric-grid,
+.launch-grid,
+.cost-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.upload-box {
+  display: grid;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.upload-box small {
+  color: var(--ink-soft);
+}
+
+.hidden-input {
+  display: none;
+}
+
+.empty-state {
+  text-align: center;
+}
+
+.summary-board {
+  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1fr);
+}
+
+.summary-card ul,
+.feature-list,
+.step-list {
+  margin: 14px 0 0;
+  padding-left: 18px;
+}
+
+.summary-card li,
+.feature-list li,
+.step-list li {
+  margin-bottom: 10px;
+  color: var(--ink-muted);
+}
+
+.summary-card li {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  list-style: none;
+}
+
+.config-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.config-grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.toggle-line {
+  justify-content: flex-start;
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.toggle-line input {
+  width: auto;
+  margin: 0;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 22px;
+  border: 1px solid rgba(112, 89, 55, 0.08);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+th,
+td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid rgba(112, 89, 55, 0.08);
+  vertical-align: middle;
+}
+
+th {
+  background: rgba(255, 246, 235, 0.95);
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-empty {
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.status-pill.已付 {
+  background: rgba(224, 248, 238, 0.95);
+  color: #165e4b;
+}
+
+.status-pill.未付 {
+  background: rgba(255, 239, 224, 0.96);
+  color: #a04c18;
+}
+
+.status-pill.待核验 {
+  background: rgba(233, 241, 255, 0.95);
+  color: #285f95;
+}
+
+.compact-table table {
+  min-width: 640px;
+}
+
+.wide {
+  min-width: min(100%, 320px);
+}
+
+.nav-chip:hover,
+.ghost-action:hover,
+.meal-card:hover,
+.payment-method:hover,
+.primary-button:hover,
+.secondary-button:hover,
+.table-action:hover,
+.notice-close:hover {
+  transform: translateY(-2px);
+}
+
+.ghost-action.compact {
+  margin-left: 0;
+  padding: 10px 14px;
+}
+
+@media (max-width: 1120px) {
+  .hero-panel,
+  .view-grid,
+  .admin-layout,
+  .launch-layout,
+  .summary-board {
+    grid-template-columns: 1fr;
+  }
+
+  .ghost-action {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .shell {
+    width: min(100vw - 20px, 100%);
+    padding-top: 16px;
+  }
+
+  .hero-panel,
+  .panel {
+    padding: 20px;
+    border-radius: 24px;
+  }
+
+  .meal-grid,
+  .summary-strip,
+  .config-grid,
+  .config-grid.three,
+  .payment-order-card {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-head,
+  .notice {
+    flex-direction: column;
+  }
+
+  .nav-chip,
+  .ghost-action {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,75 @@
+:root {
+  --bg: #f6efe5;
+  --ink: #221f1a;
+  --ink-muted: #655747;
+  --ink-soft: #8a745d;
+  --accent: #d76e2d;
+  --accent-deep: #c24d25;
+  font-family:
+    'MiSans',
+    'Noto Sans SC',
+    'Source Han Sans SC',
+    'PingFang SC',
+    'Microsoft YaHei',
+    sans-serif;
+  line-height: 1.5;
+  font-weight: 500;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(249, 194, 132, 0.14), transparent 24%),
+    radial-gradient(circle at right center, rgba(53, 139, 122, 0.11), transparent 28%),
+    linear-gradient(180deg, #f8f1e8, #f4ede4);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+  background-size: 36px 36px;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+#root {
+  position: relative;
+  min-height: 100vh;
+}
