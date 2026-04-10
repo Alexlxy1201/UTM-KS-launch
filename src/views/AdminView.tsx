@@ -341,6 +341,7 @@ export function AdminView(props: AdminViewProps) {
   }))
 
   const activeModule = moduleCards.find((card) => card.id === activeModuleId) ?? moduleCards[0]
+  const activeModuleIndex = moduleCards.findIndex((card) => card.id === activeModuleId)
 
   function openModule(nextId: AdminModuleId) {
     if (nextId === activeModuleId) return
@@ -876,10 +877,12 @@ export function AdminView(props: AdminViewProps) {
     <main className="admin-layout single-column">
       <section className="panel admin-topbar">
         <div className="admin-topbar-row">
-          <div>
+          <div className="admin-topbar-copy">
             <span className="section-tag">功能导览</span>
             <h2>后台功能模块</h2>
-            <p className="panel-subtext">点击下方标签切换模块，保存按钮固定在本栏。</p>
+            <p className="panel-subtext">
+              手机端可直接使用下方选择器切换模块，保存入口固定在这里。
+            </p>
           </div>
           <div className={`admin-save-slot ${props.hasPendingChanges ? 'dirty' : 'clean'}`}>
             {props.hasPendingChanges ? (
@@ -910,9 +913,12 @@ export function AdminView(props: AdminViewProps) {
 
         <div className="admin-mobile-switch" aria-label="手机端模块切换">
           <div className="admin-mobile-switch-copy">
-            <span className="mini-label">当前模块</span>
+            <span className="mini-label">
+              当前模块 · {activeModuleIndex + 1}/{moduleCards.length}
+            </span>
             <strong>{activeModule.title}</strong>
-            <p>{activeModule.meta}</p>
+            <p>{activeModule.description}</p>
+            <small className="admin-mobile-switch-meta">{activeModule.meta}</small>
           </div>
           <label className="admin-mobile-switch-field">
             <span className="mini-label">切换模块</span>
@@ -941,9 +947,9 @@ export function AdminView(props: AdminViewProps) {
               title={card.description}
               type="button"
             >
-              <span className="mini-label">{card.meta}</span>
+              <span className="mini-label">模块</span>
               <strong>{card.title}</strong>
-              <small>{card.description}</small>
+              <small>{card.meta}</small>
             </button>
           ))}
         </div>
