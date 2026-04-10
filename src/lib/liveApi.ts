@@ -80,7 +80,10 @@ type DailyStatRow = {
   total_cost: number
   total_profit: number
   paid_orders: number
+  note: string | null
 }
+
+const DAILY_STAT_NOTE_PREFIX = '__UTMKS_DAILY_STATS__:'
 
 type UserProfileRow = {
   user_id: string
@@ -193,14 +196,75 @@ function mapPaymentRow(row: PaymentRow): PaymentRecord {
   }
 }
 
+function parseDailyStatsNote(raw: string | null) {
+  if (!raw) {
+    return {
+      note: '',
+      extraIncome: 0,
+      extraExpense: 0,
+    }
+  }
+
+  if (!raw.startsWith(DAILY_STAT_NOTE_PREFIX)) {
+    return {
+      note: raw,
+      extraIncome: 0,
+      extraExpense: 0,
+    }
+  }
+
+  try {
+    const parsed = JSON.parse(raw.slice(DAILY_STAT_NOTE_PREFIX.length)) as {
+      note?: string
+      extraIncome?: number
+      extraExpense?: number
+    }
+
+    return {
+      note: String(parsed.note ?? '').trim(),
+      extraIncome: Number(parsed.extraIncome ?? 0),
+      extraExpense: Number(parsed.extraExpense ?? 0),
+    }
+  } catch {
+    return {
+      note: '',
+      extraIncome: 0,
+      extraExpense: 0,
+    }
+  }
+}
+
+function serializeDailyStatsNote(row: Pick<DailyStatsRow, 'note' | 'extraIncome' | 'extraExpense'>) {
+  const note = row.note.trim()
+  const extraIncome = Number(row.extraIncome || 0)
+  const extraExpense = Number(row.extraExpense || 0)
+
+  if (!note && extraIncome === 0 && extraExpense === 0) {
+    return '自动汇总'
+  }
+
+  return `${DAILY_STAT_NOTE_PREFIX}${JSON.stringify({
+    note,
+    extraIncome,
+    extraExpense,
+  })}`
+}
+
 function mapDailyStats(rows: DailyStatRow[]): DailyStatsRow[] {
-  return rows.map((row) => ({
-    date: row.stat_date,
-    totalSold: Number(row.total_sold),
-    totalCost: Number(row.total_cost),
-    totalProfit: Number(row.total_profit),
-    paidOrders: Number(row.paid_orders),
-  }))
+  return rows.map((row) => {
+    const noteState = parseDailyStatsNote(row.note)
+
+    return {
+      date: row.stat_date,
+      totalSold: Number(row.total_sold),
+      totalCost: Number(row.total_cost),
+      totalProfit: Number(row.total_profit),
+      paidOrders: Number(row.paid_orders),
+      note: noteState.note,
+      extraIncome: noteState.extraIncome,
+      extraExpense: noteState.extraExpense,
+    }
+  })
 }
 
 function mapUserProfile(row: UserProfileRow): UserProfile {
@@ -384,9 +448,9 @@ export async function fetchPublicBootstrap() {
     client.from('daily_menu').select('meal_id, today_price, is_available').eq('menu_date', today),
     client
       .from('daily_stats')
-      .select('stat_date, total_sold, total_cost, total_profit, paid_orders')
+      .select('stat_date, total_sold, total_cost, total_profit, paid_orders, note')
       .order('stat_date', { ascending: false })
-      .limit(14),
+      .limit(90),
   ])
 
   if (configResult.error) throw configResult.error
@@ -619,9 +683,9 @@ export async function fetchAdminDashboard() {
       .order('uploaded_at', { ascending: false }),
     client
       .from('daily_stats')
-      .select('stat_date, total_sold, total_cost, total_profit, paid_orders')
+      .select('stat_date, total_sold, total_cost, total_profit, paid_orders, note')
       .order('stat_date', { ascending: false })
-      .limit(14),
+      .limit(90),
     client
       .from('user_profiles')
       .select('user_id, username, full_name, email, phone, created_at, updated_at')
@@ -890,6 +954,21 @@ export async function saveLiveMenu(menu: MealItem[]) {
 
   if (masterResult.error) throw masterResult.error
   if (dailyResult.error) throw dailyResult.error
+}
+
+export async function saveLiveDailyStats(rows: DailyStatsRow[]) {
+  const client = requireSupabase()
+  const payload = rows.map((row) => ({
+    stat_date: row.date,
+    total_sold: row.totalSold,
+    total_cost: row.totalCost,
+    total_profit: row.totalProfit,
+    paid_orders: row.paidOrders,
+    note: serializeDailyStatsNote(row),
+  }))
+
+  const { error } = await client.from('daily_stats').upsert(payload, { onConflict: 'stat_date' })
+  if (error) throw error
 }
 
 export async function uploadAdminPaymentQr(channel: PaymentChannel, file: File) {

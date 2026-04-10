@@ -79,6 +79,11 @@ type AdminViewProps = {
     field: 'username' | 'fullName' | 'email' | 'phone',
     value: string,
   ) => void
+  onUpdateDailyStatField: (
+    date: string,
+    field: 'note' | 'extraIncome' | 'extraExpense',
+    value: string | number,
+  ) => void
   onSaveAll: () => void
   onAdminSignOut: () => void
   onGoHome: () => void
@@ -271,6 +276,11 @@ function AdminOverview(props: { todayOverview: TodayOverview }) {
 export function AdminView(props: AdminViewProps) {
   const [activeModuleId, setActiveModuleId] = useState<AdminModuleId>('overview')
   const [slideDirection, setSlideDirection] = useState<'forward' | 'backward'>('forward')
+  const [editingMealId, setEditingMealId] = useState<string | null>(null)
+  const [statsPeriod, setStatsPeriod] = useState<'day' | 'week' | 'month'>('day')
+  const [statsAnchorDate, setStatsAnchorDate] = useState(() =>
+    props.dailyStats[0]?.date ?? new Date().toISOString().slice(0, 10),
+  )
 
   const moduleCards: ModuleCard[] = [
     {
@@ -281,9 +291,9 @@ export function AdminView(props: AdminViewProps) {
     },
     {
       id: 'today-orders',
-      title: '今日下单',
-      description: '查看今天谁下单了什么菜。',
-      meta: `${props.orders.length} 笔下单`,
+      title: '今日订单',
+      description: '查看今日订单中的用户和菜品。',
+      meta: `${props.orders.length} 笔订单`,
     },
     {
       id: 'config',
@@ -340,6 +350,55 @@ export function AdminView(props: AdminViewProps) {
     meals: order.items.map((item) => item.mealName),
   }))
   const activeModule = moduleCards.find((card) => card.id === activeModuleId) ?? moduleCards[0]
+  const editingMeal = props.menu.find((meal) => meal.id === editingMealId) ?? null
+  const statsRowsByDate = useMemo(
+    () => [...props.dailyStats].sort((left, right) => right.date.localeCompare(left.date)),
+    [props.dailyStats],
+  )
+  const selectedDailyStat =
+    statsRowsByDate.find((row) => row.date === statsAnchorDate) ??
+    ({
+      date: statsAnchorDate,
+      totalSold: 0,
+      totalCost: 0,
+      totalProfit: 0,
+      paidOrders: 0,
+      note: '',
+      extraIncome: 0,
+      extraExpense: 0,
+    } satisfies DailyStatsRow)
+  const statsSummary = useMemo(() => {
+    const anchor = new Date(`${statsAnchorDate}T00:00:00`)
+    const days = statsPeriod === 'day' ? 1 : statsPeriod === 'week' ? 7 : 30
+    const start = new Date(anchor)
+    start.setDate(anchor.getDate() - (days - 1))
+
+    const rows = statsRowsByDate.filter((row) => {
+      const current = new Date(`${row.date}T00:00:00`)
+      return current >= start && current <= anchor
+    })
+
+    return rows.reduce(
+      (summary, row) => {
+        summary.totalSold += row.totalSold
+        summary.totalCost += row.totalCost
+        summary.totalProfit += row.totalProfit
+        summary.paidOrders += row.paidOrders
+        summary.extraIncome += row.extraIncome
+        summary.extraExpense += row.extraExpense
+        return summary
+      },
+      {
+        rows,
+        totalSold: 0,
+        totalCost: 0,
+        totalProfit: 0,
+        paidOrders: 0,
+        extraIncome: 0,
+        extraExpense: 0,
+      },
+    )
+  }, [statsAnchorDate, statsPeriod, statsRowsByDate])
 
   function openModule(nextId: AdminModuleId) {
     if (nextId === activeModuleId) return
@@ -385,9 +444,8 @@ export function AdminView(props: AdminViewProps) {
       <section className="panel admin-module-panel">
         <div className="panel-head">
           <div>
-            <span className="section-tag">今日下单</span>
-            <h2>今天谁下单了什么菜</h2>
-            <p className="panel-subtext">这里只展示下单时间、姓名和菜品，不显示价格与成本。</p>
+            <span className="section-tag">今日订单</span>
+            <h2>今日订单</h2>
           </div>
           <span className="badge ok">{todayOrderDigest.length} 笔</span>
         </div>
@@ -688,12 +746,13 @@ export function AdminView(props: AdminViewProps) {
         <div className="menu-admin-list">
           {props.menu.map((meal) => (
             <article key={meal.id} className="menu-admin-card">
-              <div className="menu-admin-top">
-                <div>
+              <div className="menu-admin-header">
+                <div className="menu-admin-summary">
                   <strong>{meal.name || '未命名菜品'}</strong>
-                  <p>
-                    {meal.category || '未分类'} / {meal.flavor || '常规'}
-                  </p>
+                  <div className="menu-admin-badges">
+                    <span>{meal.category || '未分类'}</span>
+                    <span>{meal.flavor || '常规'}</span>
+                  </div>
                 </div>
                 <label className="toggle-line">
                   <input
@@ -704,59 +763,19 @@ export function AdminView(props: AdminViewProps) {
                   今日上架
                 </label>
               </div>
-
-              <div className="config-grid three">
-                <label>
-                  菜品名称
-                  <input
-                    onChange={(event) => props.onUpdateMealTextField(meal.id, 'name', event.target.value)}
-                    type="text"
-                    value={meal.name}
-                  />
-                </label>
-                <label>
-                  分类
-                  <input
-                    onChange={(event) => props.onUpdateMealTextField(meal.id, 'category', event.target.value)}
-                    type="text"
-                    value={meal.category}
-                  />
-                </label>
-                <label>
-                  口味
-                  <input
-                    onChange={(event) => props.onUpdateMealTextField(meal.id, 'flavor', event.target.value)}
-                    type="text"
-                    value={meal.flavor}
-                  />
-                </label>
+              <div className="menu-admin-stats">
+                <span>今日售价 {formatCurrency(meal.todayPrice, 'RM')}</span>
+                <span>基础售价 {formatCurrency(meal.basePrice, 'RM')}</span>
+                <span>成本 {formatCurrency(meal.cost, 'RM')}</span>
               </div>
-
-              <div className="config-grid three">
-                <label>
-                  基础售价
-                  <DraftNumberInput
-                    inputMode="decimal"
-                    onCommit={(value) => props.onUpdateMealField(meal.id, 'basePrice', value)}
-                    value={meal.basePrice}
-                  />
-                </label>
-                <label>
-                  今日售价
-                  <DraftNumberInput
-                    inputMode="decimal"
-                    onCommit={(value) => props.onUpdateMealField(meal.id, 'todayPrice', value)}
-                    value={meal.todayPrice}
-                  />
-                </label>
-                <label>
-                  成本
-                  <DraftNumberInput
-                    inputMode="decimal"
-                    onCommit={(value) => props.onUpdateMealField(meal.id, 'cost', value)}
-                    value={meal.cost}
-                  />
-                </label>
+              <div className="menu-admin-actions">
+                <button
+                  className="secondary-button"
+                  onClick={() => setEditingMealId(meal.id)}
+                  type="button"
+                >
+                  编辑详情
+                </button>
               </div>
             </article>
           ))}
@@ -772,8 +791,8 @@ export function AdminView(props: AdminViewProps) {
             <p className="panel-subtext">支付截图仅保留 7 天，超期后系统将自动清理。</p>
           </div>
         </div>
-        <div className="table-wrap responsive-card-wrap">
-          <table className="responsive-table">
+        <div className="table-wrap compact-table mobile-scroll-table">
+          <table>
             <thead>
               <tr>
                 <th>上传时间</th>
@@ -832,11 +851,92 @@ export function AdminView(props: AdminViewProps) {
         <div className="panel-head">
           <div>
             <span className="section-tag">每日统计</span>
-            <h2>DailyStats 快照</h2>
+            <h2>经营统计</h2>
+          </div>
+          <div className="stats-filter-bar">
+            <label className="stats-filter-field">
+              统计日期
+              <input
+                onChange={(event) => setStatsAnchorDate(event.target.value)}
+                type="date"
+                value={statsAnchorDate}
+              />
+            </label>
+            <label className="stats-filter-field">
+              汇总周期
+              <select
+                onChange={(event) => setStatsPeriod(event.target.value as 'day' | 'week' | 'month')}
+                value={statsPeriod}
+              >
+                <option value="day">当日</option>
+                <option value="week">近 7 天</option>
+                <option value="month">近 30 天</option>
+              </select>
+            </label>
           </div>
         </div>
-        <div className="table-wrap responsive-card-wrap">
-          <table className="responsive-table">
+
+        <div className="metric-grid stats-summary-grid">
+          <article className="metric-card highlight">
+            <span>周期售出</span>
+            <strong>{formatCurrency(statsSummary.totalSold, 'RM')}</strong>
+          </article>
+          <article className="metric-card">
+            <span>周期成本</span>
+            <strong>{formatCurrency(statsSummary.totalCost, 'RM')}</strong>
+          </article>
+          <article className="metric-card">
+            <span>附加收支</span>
+            <strong>
+              {formatCurrency(statsSummary.extraIncome - statsSummary.extraExpense, 'RM')}
+            </strong>
+          </article>
+          <article className="metric-card">
+            <span>周期净利润</span>
+            <strong>
+              {formatCurrency(
+                statsSummary.totalProfit + statsSummary.extraIncome - statsSummary.extraExpense,
+                'RM',
+              )}
+            </strong>
+          </article>
+        </div>
+
+        <section className="stats-editor-card">
+          <div className="inline-head">
+            <span className="section-tag">统计备注</span>
+            <h3>{statsAnchorDate || '未选择日期'}</h3>
+          </div>
+          <div className="stats-editor-grid">
+            <label className="menu-admin-field menu-admin-field-price">
+              附加收入
+              <DraftNumberInput
+                inputMode="decimal"
+                onCommit={(value) => props.onUpdateDailyStatField(statsAnchorDate, 'extraIncome', value)}
+                value={selectedDailyStat.extraIncome}
+              />
+            </label>
+            <label className="menu-admin-field menu-admin-field-price">
+              附加支出
+              <DraftNumberInput
+                inputMode="decimal"
+                onCommit={(value) => props.onUpdateDailyStatField(statsAnchorDate, 'extraExpense', value)}
+                value={selectedDailyStat.extraExpense}
+              />
+            </label>
+            <label className="stats-note-field">
+              备注
+              <textarea
+                onChange={(event) => props.onUpdateDailyStatField(statsAnchorDate, 'note', event.target.value)}
+                rows={3}
+                value={selectedDailyStat.note}
+              />
+            </label>
+          </div>
+        </section>
+
+        <div className="table-wrap compact-table mobile-scroll-table">
+          <table>
             <thead>
               <tr>
                 <th>日期</th>
@@ -844,22 +944,28 @@ export function AdminView(props: AdminViewProps) {
                 <th>总成本</th>
                 <th>总利润</th>
                 <th>已付订单数</th>
+                <th>附加收入</th>
+                <th>附加支出</th>
+                <th>备注</th>
               </tr>
             </thead>
             <tbody>
-              {props.dailyStats.length ? (
-                props.dailyStats.map((row) => (
+              {statsSummary.rows.length ? (
+                statsSummary.rows.map((row) => (
                   <tr key={row.date}>
-                    <td data-label="日期">{row.date}</td>
-                    <td data-label="总售出">{formatCurrency(row.totalSold, 'RM')}</td>
-                    <td data-label="总成本">{formatCurrency(row.totalCost, 'RM')}</td>
-                    <td data-label="总利润">{formatCurrency(row.totalProfit, 'RM')}</td>
-                    <td data-label="已付订单数">{row.paidOrders}</td>
+                    <td>{row.date}</td>
+                    <td>{formatCurrency(row.totalSold, 'RM')}</td>
+                    <td>{formatCurrency(row.totalCost, 'RM')}</td>
+                    <td>{formatCurrency(row.totalProfit, 'RM')}</td>
+                    <td>{row.paidOrders}</td>
+                    <td>{formatCurrency(row.extraIncome, 'RM')}</td>
+                    <td>{formatCurrency(row.extraExpense, 'RM')}</td>
+                    <td>{row.note || '—'}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td className="table-empty" colSpan={5}>
+                  <td className="table-empty" colSpan={8}>
                     暂无统计数据
                   </td>
                 </tr>
@@ -932,6 +1038,77 @@ export function AdminView(props: AdminViewProps) {
       <div className={`admin-module-stage ${slideDirection}`} key={`${activeModuleId}-${slideDirection}`}>
         {modules[activeModuleId]}
       </div>
+
+      {editingMeal ? (
+        <div className="confirm-overlay" role="dialog" aria-modal="true">
+          <div className="confirm-card menu-editor-dialog">
+            <div className="panel-head">
+              <div>
+                <span className="section-tag">菜单编辑</span>
+                <h3>{editingMeal.name || '未命名菜品'}</h3>
+                <p className="panel-subtext">修改内容后，点击顶部“保存修改”即可同步到数据库。</p>
+              </div>
+            </div>
+
+            <div className="menu-editor-grid">
+              <label className="menu-admin-field">
+                菜品名称
+                <input
+                  onChange={(event) => props.onUpdateMealTextField(editingMeal.id, 'name', event.target.value)}
+                  type="text"
+                  value={editingMeal.name}
+                />
+              </label>
+              <label className="menu-admin-field">
+                分类
+                <input
+                  onChange={(event) => props.onUpdateMealTextField(editingMeal.id, 'category', event.target.value)}
+                  type="text"
+                  value={editingMeal.category}
+                />
+              </label>
+              <label className="menu-admin-field">
+                口味
+                <input
+                  onChange={(event) => props.onUpdateMealTextField(editingMeal.id, 'flavor', event.target.value)}
+                  type="text"
+                  value={editingMeal.flavor}
+                />
+              </label>
+              <label className="menu-admin-field menu-admin-field-price">
+                基础售价
+                <DraftNumberInput
+                  inputMode="decimal"
+                  onCommit={(value) => props.onUpdateMealField(editingMeal.id, 'basePrice', value)}
+                  value={editingMeal.basePrice}
+                />
+              </label>
+              <label className="menu-admin-field menu-admin-field-price">
+                今日售价
+                <DraftNumberInput
+                  inputMode="decimal"
+                  onCommit={(value) => props.onUpdateMealField(editingMeal.id, 'todayPrice', value)}
+                  value={editingMeal.todayPrice}
+                />
+              </label>
+              <label className="menu-admin-field menu-admin-field-price">
+                成本
+                <DraftNumberInput
+                  inputMode="decimal"
+                  onCommit={(value) => props.onUpdateMealField(editingMeal.id, 'cost', value)}
+                  value={editingMeal.cost}
+                />
+              </label>
+            </div>
+
+            <div className="confirm-actions">
+              <button className="secondary-button" onClick={() => setEditingMealId(null)} type="button">
+                完成
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   )
 }

@@ -127,6 +127,9 @@ export function buildDailyStats(appState: AppState): DailyStatsRow[] {
         totalCost,
         totalProfit: totalSold - totalCost,
         paidOrders: 1,
+        note: '',
+        extraIncome: 0,
+        extraExpense: 0,
       })
     })
 

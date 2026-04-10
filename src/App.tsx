@@ -18,6 +18,7 @@ import {
   fetchPublicBootstrap,
   getCurrentSession,
   saveLiveConfig,
+  saveLiveDailyStats,
   saveLiveMenu,
   signInAdmin,
   signInUser,
@@ -135,6 +136,10 @@ function cloneManagedUsers(users: ManagedUserProfile[]): ManagedUserProfile[] {
   return users.map((user) => ({ ...user }))
 }
 
+function cloneDailyStats(rows: DailyStatsRow[]): DailyStatsRow[] {
+  return rows.map((row) => ({ ...row }))
+}
+
 function normalizeMenu(menu: MealItem[]) {
   return [...menu]
     .map((meal) => ({ ...meal }))
@@ -145,6 +150,12 @@ function normalizeManagedUsers(users: ManagedUserProfile[]) {
   return [...users]
     .map((user) => ({ ...user }))
     .sort((left, right) => left.userId.localeCompare(right.userId))
+}
+
+function normalizeDailyStats(rows: DailyStatsRow[]) {
+  return [...rows]
+    .map((row) => ({ ...row }))
+    .sort((left, right) => left.date.localeCompare(right.date))
 }
 
 function getRefreshScopeForView(view: NavigationView): RefreshScope {
@@ -183,6 +194,7 @@ function App() {
   const [payments, setPayments] = useState<PaymentRecord[]>([])
   const [dailyStats, setDailyStats] = useState<DailyStatsRow[]>([])
   const [managedUsers, setManagedUsers] = useState<ManagedUserProfile[]>([])
+  const [adminDailyStatsBaseline, setAdminDailyStatsBaseline] = useState<DailyStatsRow[]>([])
   const [exchangeRateMeta, setExchangeRateMeta] = useState<ExchangeRateMeta>(null)
   const [bootLoading, setBootLoading] = useState(isLiveMode)
   const [actionPending, setActionPending] = useState(false)
@@ -258,6 +270,7 @@ function App() {
       setAdminConfigBaseline(cloneConfig(nextConfig))
       setAdminMenuBaseline(cloneMenu(nextMenu))
       setAdminUsersBaseline(cloneManagedUsers(nextUsers))
+      setAdminDailyStatsBaseline(cloneDailyStats(data.dailyStats))
     },
     [isAdminAuthorized],
   )
@@ -284,10 +297,12 @@ function App() {
       setIsAdminAuthorized(false)
       setAdminOrders([])
       setPayments([])
+      setDailyStats([])
       setManagedUsers([])
       setAdminConfigBaseline(null)
       setAdminMenuBaseline([])
       setAdminUsersBaseline([])
+      setAdminDailyStatsBaseline([])
       if (activeView === 'user' || activeView === 'user-center' || activeView === 'admin') {
         setActiveView('home')
       }
@@ -466,20 +481,26 @@ function App() {
     const usersChanged =
       JSON.stringify(normalizeManagedUsers(managedUsers)) !==
       JSON.stringify(normalizeManagedUsers(adminUsersBaseline))
+    const statsChanged =
+      JSON.stringify(normalizeDailyStats(dailyStats)) !==
+      JSON.stringify(normalizeDailyStats(adminDailyStatsBaseline))
 
     return (
       configChanged ||
       menuChanged ||
+      statsChanged ||
       usersChanged ||
       pendingAlipayQrUpload != null ||
       pendingWechatQrUpload != null
     )
   }, [
     adminConfigBaseline,
+    adminDailyStatsBaseline,
     adminMenuBaseline,
     adminUsersBaseline,
     appState.config,
     appState.menu,
+    dailyStats,
     managedUsers,
     pendingAlipayQrUpload,
     pendingWechatQrUpload,
@@ -749,6 +770,40 @@ function App() {
     )
   }
 
+  function handleUpdateDailyStatField(
+    date: string,
+    field: 'note' | 'extraIncome' | 'extraExpense',
+    value: string | number,
+  ) {
+    setDailyStats((current) => {
+      const hasTarget = current.some((row) => row.date === date)
+      const nextRows = hasTarget
+        ? current.map((row) =>
+            row.date === date
+              ? {
+                  ...row,
+                  [field]: field === 'note' ? String(value) : Number(value) || 0,
+                }
+              : row,
+          )
+        : [
+            {
+              date,
+              totalSold: 0,
+              totalCost: 0,
+              totalProfit: 0,
+              paidOrders: 0,
+              note: field === 'note' ? String(value) : '',
+              extraIncome: field === 'extraIncome' ? Number(value) || 0 : 0,
+              extraExpense: field === 'extraExpense' ? Number(value) || 0 : 0,
+            },
+            ...current,
+          ]
+
+      return nextRows.sort((left, right) => right.date.localeCompare(left.date))
+    })
+  }
+
   function handleAddMeal() {
     const nextIndex = appState.menu.length + 1
 
@@ -937,6 +992,10 @@ function App() {
       const baseline = adminUsersBaseline.find((item) => item.userId === user.userId)
       return !baseline || JSON.stringify(user) !== JSON.stringify(baseline)
     })
+    const changedDailyStats = dailyStats.filter((row) => {
+      const baseline = adminDailyStatsBaseline.find((item) => item.date === row.date)
+      return !baseline || JSON.stringify(row) !== JSON.stringify(baseline)
+    })
 
     try {
       setSaveAllPending(true)
@@ -980,6 +1039,10 @@ function App() {
         )
       }
 
+      if (changedDailyStats.length) {
+        tasks.push(saveLiveDailyStats(changedDailyStats))
+      }
+
       await Promise.all(tasks)
 
       setAppState((current) => ({ ...current, config: nextConfig }))
@@ -989,7 +1052,7 @@ function App() {
       setNotice({
         tone: 'success',
         title: '后台内容已保存',
-        description: '系统配置、收款码、菜单设置和用户资料均已同步到数据库。',
+        description: '系统配置、收款码、菜单设置、统计信息和用户资料均已同步到数据库。',
       })
     } catch (error) {
       setNotice({
@@ -997,7 +1060,7 @@ function App() {
         title: '后台保存失败',
         description: getErrorMessage(
           error,
-          '请检查 app_config、menu_master、daily_menu、user_profiles、payment-qrs 存储桶及管理员权限策略。',
+          '请检查 app_config、menu_master、daily_menu、daily_stats、user_profiles、payment-qrs 存储桶及管理员权限策略。',
         ),
       })
     } finally {
@@ -1548,6 +1611,9 @@ function App() {
           onAddMeal={handleAddMeal}
           onUpdateManagedUserField={(userId, field, value) =>
             handleUpdateManagedUserField(userId, field, value)
+          }
+          onUpdateDailyStatField={(date, field, value) =>
+            handleUpdateDailyStatField(date, field, value)
           }
           onUpdateMealTextField={(mealId, field, value) =>
             setAppState((current) => ({

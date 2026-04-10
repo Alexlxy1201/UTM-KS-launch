@@ -2283,6 +2283,160 @@ button:active,
   background: rgba(255, 255, 255, 0.8);
 }
 
+.admin-console .menu-admin-card {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-console .menu-admin-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+}
+
+.admin-console .menu-admin-summary {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.admin-console .menu-admin-summary strong {
+  font-size: 1.02rem;
+  letter-spacing: -0.02em;
+}
+
+.admin-console .menu-admin-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-console .menu-admin-badges span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(215, 122, 47, 0.1);
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.admin-console .menu-admin-header .toggle-line {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--line);
+}
+
+.admin-console .menu-admin-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-console .menu-admin-stats span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(120, 88, 52, 0.08);
+  color: var(--ink-muted);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.admin-console .menu-admin-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.admin-console .menu-editor-dialog {
+  width: min(720px, 100%);
+}
+
+.admin-console .menu-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.admin-console .stats-filter-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: end;
+}
+
+.admin-console .stats-filter-field {
+  min-width: 170px;
+  margin: 0;
+  font-size: 0.84rem;
+}
+
+.admin-console .stats-filter-field input,
+.admin-console .stats-filter-field select {
+  margin-top: 6px;
+}
+
+.admin-console .stats-summary-grid {
+  margin-bottom: 0;
+}
+
+.admin-console .stats-editor-card {
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-console .stats-editor-card h3 {
+  margin: 6px 0 0;
+}
+
+.admin-console .stats-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.admin-console .stats-note-field {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.admin-console .menu-admin-field {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.25;
+}
+
+.admin-console .menu-admin-field input {
+  margin-top: 6px;
+  min-height: 42px;
+  padding: 11px 13px;
+  border-radius: 14px;
+}
+
+.admin-console .menu-admin-field-price input {
+  text-align: left;
+}
+
+.admin-console .mobile-scroll-table {
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-console .mobile-scroll-table table {
+  min-width: 860px;
+}
+
 @media (max-width: 760px) {
   .admin-console {
     gap: 14px;
@@ -2363,6 +2517,52 @@ button:active,
   .admin-console .admin-module-panel {
     border-radius: 22px;
   }
+
+  .admin-console .menu-admin-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-console .menu-admin-header .toggle-line {
+    justify-content: center;
+  }
+
+  .admin-console .menu-admin-inline-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .admin-console .menu-admin-field {
+    font-size: 0.8rem;
+  }
+
+  .admin-console .menu-admin-stats {
+    gap: 6px;
+  }
+
+  .admin-console .menu-admin-stats span {
+    min-height: 32px;
+    font-size: 0.8rem;
+  }
+
+  .admin-console .menu-admin-actions .secondary-button {
+    width: 100%;
+  }
+
+  .admin-console .menu-editor-grid,
+  .admin-console .stats-editor-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .admin-console .stats-filter-bar {
+    width: 100%;
+  }
+
+  .admin-console .stats-filter-field {
+    min-width: 0;
+    flex: 1 1 160px;
+  }
 }
 
 @media (max-width: 520px) {
@@ -2381,5 +2581,14 @@ button:active,
 
   .admin-console .summary-board {
     grid-template-columns: 1fr;
+  }
+
+  .admin-console .menu-editor-grid,
+  .admin-console .stats-editor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-console .stats-filter-field {
+    flex-basis: 100%;
   }
 }

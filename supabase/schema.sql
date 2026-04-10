@@ -424,6 +424,7 @@ declare
   v_total_cost numeric(10, 2) := 0;
   v_total_profit numeric(10, 2) := 0;
   v_paid_orders integer := 0;
+  v_existing_note text := null;
 begin
   select
     coalesce(sum(oi.unit_price), 0),
@@ -435,6 +436,11 @@ begin
   join public.order_items oi on oi.order_id = o.id
   where o.order_date = p_stat_date
     and o.payment_status = '已付';
+
+  select ds.note
+  into v_existing_note
+  from public.daily_stats ds
+  where ds.stat_date = p_stat_date;
 
   insert into public.daily_stats (
     stat_date,
@@ -451,7 +457,7 @@ begin
     v_total_cost,
     v_total_profit,
     v_paid_orders,
-    '自动汇总',
+    coalesce(v_existing_note, '自动汇总'),
     now()
   )
   on conflict (stat_date) do update
@@ -460,7 +466,7 @@ begin
     total_cost = excluded.total_cost,
     total_profit = excluded.total_profit,
     paid_orders = excluded.paid_orders,
-    note = excluded.note,
+    note = coalesce(public.daily_stats.note, excluded.note),
     updated_at = now();
 end;
 $$;

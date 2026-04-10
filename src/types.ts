@@ -98,4 +98,7 @@ export type DailyStatsRow = {
   totalCost: number
   totalProfit: number
   paidOrders: number
+  note: string
+  extraIncome: number
+  extraExpense: number
 }
