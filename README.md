@@ -1,19 +1,15 @@
-# 晨味订餐台
+# UTM-KS Launch
 
-一个面向中文场景的低成本订餐网页原型，包含用户端和管理员端，参考你提供的 Apps Script 订餐流程做了网页化设计：
+一个面向正式部署的中文订餐系统，包含用户端和管理员端，覆盖用户注册登录、选餐下单、静态码支付、付款截图上传、管理员订单管理和每日统计。
 
-- 用户端：首页下单、支付页、截图上传、我的订单
-- 管理员端：今日订单、付款记录、今日菜单、经营统计、每日汇总
-- 上线方案：Cloudflare Pages + Supabase + 对象存储
+这个仓库现在默认按“上线版”组织：
 
-当前仓库默认运行在“演示模式”，数据保存在浏览器 `localStorage`，方便先确认页面和流程。正式上线时，把数据层切换到 Supabase 即可。
+- 不再依赖浏览器本地假数据作为回退
+- 没有配置 Supabase 时，页面只提示缺少配置，不会继续跑测试流程
+- 用户通过前台自行注册账号
+- 管理员只能在后台内部创建并授权
 
-## 现在支持两种运行模式
-
-- 演示模式：未配置 Supabase 环境变量时自动启用，本地 `localStorage` 保存数据
-- 实时模式：配置 Supabase 后自动启用，订单、菜单、截图和后台登录都走真实后端
-
-## 本地启动
+## 运行方式
 
 ```bash
 npm install
@@ -26,50 +22,45 @@ npm run dev
 npm run build
 ```
 
-## 开启实时模式
+## 必要环境变量
 
-1. 复制 [.env.example](/C:/project/UTM&KS launch/.env.example) 为 `.env`
-2. 填入你自己的 Supabase 项目地址和匿名 Key
-3. 在 Supabase SQL Editor 执行 [schema.sql](/C:/project/UTM&KS launch/supabase/schema.sql)
-4. 重新运行 `npm run dev`
+复制 [.env.example](/C:/project/UTM&KS launch/.env.example) 为 `.env`，然后填写：
 
 ```env
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-## 当前已实现的页面能力
+## 初始化正式后端
 
-- 用户端下单：输入姓名、勾选今日菜单、生成订单
-- 支付面板：展示 RM 与折算 CNY，选择支付宝 / 微信，上传付款截图文件名
-- 我的订单：按姓名查看今天的订单并继续支付
-- 管理员订单台：搜索订单、修改支付状态、删除订单
-- 菜单设置：控制今日上架、基础售价、今日售价、成本
-- 汇总统计：按“已付”订单自动生成总售出、总成本、总利润和 summary
-- DailyStats：按日期聚合每日快照
+1. 在 Supabase SQL Editor 执行 [schema.sql](/C:/project/UTM&KS launch/supabase/schema.sql)
+2. 在 Authentication 里内部创建管理员账号
+3. 推荐管理员账号：
+   - 邮箱：`admin@example.com`
+   - 密码：`abc123`
+4. `schema.sql` 会自动预置 `admin@example.com` 到 `admin_users`
+5. 普通用户通过前台自行注册，资料会自动写入 `user_profiles`
 
-## 推荐上线架构
+如果你要追加新的内部管理员，可以执行：
 
-### 前端
+```sql
+insert into public.admin_users (email)
+values ('manager@example.com')
+on conflict (email) do nothing;
+```
 
-- 部署平台：Cloudflare Pages / Netlify / Vercel
-- 技术栈：React + Vite
-- 成本：静态站点一般可长期保持低成本甚至免费
+然后再去 Authentication 创建同邮箱账号。
 
-### 后端
+## 当前系统能力
 
-- 数据库：Supabase Postgres
-- 文件存储：Supabase Storage
-- 管理员登录：Supabase Auth
-- 订单统计：可先前端聚合，后续改成 SQL 视图或 Edge Function
-- 当前代码已内置 Supabase 客户端和对象存储上传逻辑
-
-### 支付
-
-- 最省成本方案：继续使用支付宝 / 微信静态收款码
-- 用户付款后上传截图
-- 简化版：上传即自动标记“已付”
-- 更稳妥版：上传后先标记“待核验”，管理员确认后再变“已付”
+- 用户注册：真实姓名、邮箱、电话、密码
+- 用户登录后直接下单，不再手填姓名
+- 我的订单自动读取当前登录账号的当日订单
+- 支付页展示 RM 与折算 CNY
+- 付款截图上传到 Supabase Storage
+- 管理员登录后查看订单、付款记录、菜单和日报
+- 管理员修改订单状态、菜单、系统配置
+- DailyStats 自动汇总
 
 ## 目录说明
 
@@ -77,31 +68,15 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 - [src/views/UserView.tsx](/C:/project/UTM&KS launch/src/views/UserView.tsx)：用户端视图
 - [src/views/AdminView.tsx](/C:/project/UTM&KS launch/src/views/AdminView.tsx)：管理员端视图
 - [src/views/LaunchView.tsx](/C:/project/UTM&KS launch/src/views/LaunchView.tsx)：上线方案页面
-- [src/demoData.ts](/C:/project/UTM&KS launch/src/demoData.ts)：演示数据和统计逻辑
-- [supabase/schema.sql](/C:/project/UTM&KS launch/supabase/schema.sql)：推荐的数据库结构
-- [docs/launch-plan.md](/C:/project/UTM&KS launch/docs/launch-plan.md)：上线落地说明
+- [src/lib/liveApi.ts](/C:/project/UTM&KS launch/src/lib/liveApi.ts)：Supabase 读写接口
+- [supabase/schema.sql](/C:/project/UTM&KS launch/supabase/schema.sql)：数据库结构、RLS、RPC 和存储策略
+- [docs/launch-plan.md](/C:/project/UTM&KS launch/docs/launch-plan.md)：部署落地说明
 
-## 下一步怎么接成真实系统
+## 部署建议
 
-1. 先在 Supabase 执行 [schema.sql](/C:/project/UTM&KS launch/supabase/schema.sql)。
-2. 在 Auth 里创建一个管理员账号。
-3. 执行下面这条 SQL，把这个账号加入管理员名单。
-4. 配置 `.env` 后部署前端到 Cloudflare Pages / Vercel / Netlify。
+- 前端：Cloudflare Pages / Vercel / Netlify
+- 数据库：Supabase Postgres
+- 文件存储：Supabase Storage
+- 认证：Supabase Auth
 
-```sql
-insert into public.admin_users (user_id, email)
-select id, email
-from auth.users
-where email = '你的管理员邮箱'
-on conflict (user_id) do nothing;
-```
-
-## 说明
-
-当前版本已经具备“直接上线的前端 + Supabase 后端接入能力”。如果你要，我下一步还可以继续帮你补：
-
-- Firebase 版
-- 纯静态 + Google Sheets 轻量版
-- 可部署到国内服务器的 Node.js 版
-- 订单导出 Excel / CSV
-- 企业微信或 Telegram 自动通知
+部署时把 `VITE_SUPABASE_URL` 和 `VITE_SUPABASE_ANON_KEY` 配到平台环境变量即可。

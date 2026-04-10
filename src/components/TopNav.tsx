@@ -2,36 +2,51 @@ import type { NavigationView } from '../types'
 
 type TopNavProps = {
   activeView: NavigationView
+  canAccessUserPage: boolean
+  canAccessAdminPage: boolean
   onSwitch: (view: NavigationView) => void
-  onReset: () => void
+  onRefresh: () => void
 }
 
 export function TopNav(props: TopNavProps) {
   return (
     <nav className="top-nav">
       <button
-        className={props.activeView === 'user' ? 'nav-chip active' : 'nav-chip'}
-        onClick={() => props.onSwitch('user')}
+        className={props.activeView === 'home' ? 'nav-chip active' : 'nav-chip'}
+        onClick={() => props.onSwitch('home')}
         type="button"
       >
-        用户端
+        首页
       </button>
-      <button
-        className={props.activeView === 'admin' ? 'nav-chip active' : 'nav-chip'}
-        onClick={() => props.onSwitch('admin')}
-        type="button"
-      >
-        管理员端
-      </button>
-      <button
-        className={props.activeView === 'launch' ? 'nav-chip active' : 'nav-chip'}
-        onClick={() => props.onSwitch('launch')}
-        type="button"
-      >
-        上线方案
-      </button>
-      <button className="ghost-action" onClick={props.onReset} type="button">
-        重置演示数据
+      {props.canAccessUserPage ? (
+        <>
+          <button
+            className={props.activeView === 'user' ? 'nav-chip active' : 'nav-chip'}
+            onClick={() => props.onSwitch('user')}
+            type="button"
+          >
+            订餐页面
+          </button>
+          <button
+            className={props.activeView === 'user-center' ? 'nav-chip active' : 'nav-chip'}
+            onClick={() => props.onSwitch('user-center')}
+            type="button"
+          >
+            用户中心
+          </button>
+        </>
+      ) : null}
+      {props.canAccessAdminPage || props.activeView === 'admin' ? (
+        <button
+          className={props.activeView === 'admin' ? 'nav-chip active' : 'nav-chip'}
+          onClick={() => props.onSwitch('admin')}
+          type="button"
+        >
+          管理后台
+        </button>
+      ) : null}
+      <button className="ghost-action" onClick={props.onRefresh} type="button">
+        刷新数据
       </button>
     </nav>
   )

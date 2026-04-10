@@ -1,8 +1,21 @@
-export type NavigationView = 'user' | 'admin' | 'launch'
+export type NavigationView = 'home' | 'register' | 'admin-login' | 'user' | 'user-center' | 'admin'
 
-export type OrderStatus = '未付' | '待核验' | '已付'
+export type OrderStatus = '\u672a\u4ed8' | '\u5f85\u6838\u9a8c' | '\u5df2\u4ed8'
 
-export type PaymentChannel = '支付宝' | '微信'
+export type PaymentChannel = '\u652f\u4ed8\u5b9d' | '\u5fae\u4fe1'
+
+export type UserProfile = {
+  userId: string
+  username: string
+  fullName: string
+  email: string
+  phone: string
+}
+
+export type ManagedUserProfile = UserProfile & {
+  createdAt: string
+  updatedAt: string
+}
 
 export type MealItem = {
   id: string
@@ -52,6 +65,8 @@ export type AppConfig = {
   autoMarkPaid: boolean
   qrNote: string
   launchBudget: string
+  alipayQrUrl: string
+  wechatQrUrl: string
 }
 
 export type AppState = {

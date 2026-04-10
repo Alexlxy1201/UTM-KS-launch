@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node ./scripts/dev.mjs",
-    "build": "node ./node_modules/typescript/bin/tsc -b && node ./scripts/build.mjs",
-    "lint": "node ./node_modules/eslint/bin/eslint.js .",
-    "preview": "node ./scripts/preview.mjs"
+    "dev": "node -e \"const path=require('node:path'); const pkg=String(process.env.npm_package_json||'').replace(/^\\\\\\\\\\?\\\\/,''); require(path.join(path.dirname(pkg),'scripts','run-from-package-root.cjs'))('dev')\"",
+    "build": "node -e \"const path=require('node:path'); const pkg=String(process.env.npm_package_json||'').replace(/^\\\\\\\\\\?\\\\/,''); require(path.join(path.dirname(pkg),'scripts','run-from-package-root.cjs'))('build')\"",
+    "lint": "node -e \"const path=require('node:path'); const pkg=String(process.env.npm_package_json||'').replace(/^\\\\\\\\\\?\\\\/,''); require(path.join(path.dirname(pkg),'scripts','run-from-package-root.cjs'))('lint')\"",
+    "preview": "node -e \"const path=require('node:path'); const pkg=String(process.env.npm_package_json||'').replace(/^\\\\\\\\\\?\\\\/,''); require(path.join(path.dirname(pkg),'scripts','run-from-package-root.cjs'))('preview')\""
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.101.1",
