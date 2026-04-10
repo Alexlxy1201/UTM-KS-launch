@@ -340,6 +340,8 @@ export function AdminView(props: AdminViewProps) {
     meals: order.items.map((item) => item.mealName),
   }))
 
+  const activeModule = moduleCards.find((card) => card.id === activeModuleId) ?? moduleCards[0]
+
   function openModule(nextId: AdminModuleId) {
     if (nextId === activeModuleId) return
     const currentIndex = moduleCards.findIndex((card) => card.id === activeModuleId)
@@ -904,6 +906,28 @@ export function AdminView(props: AdminViewProps) {
               </div>
             )}
           </div>
+        </div>
+
+        <div className="admin-mobile-switch" aria-label="手机端模块切换">
+          <div className="admin-mobile-switch-copy">
+            <span className="mini-label">当前模块</span>
+            <strong>{activeModule.title}</strong>
+            <p>{activeModule.meta}</p>
+          </div>
+          <label className="admin-mobile-switch-field">
+            <span className="mini-label">切换模块</span>
+            <select
+              aria-label="切换后台模块"
+              onChange={(event) => openModule(event.target.value as AdminModuleId)}
+              value={activeModuleId}
+            >
+              {moduleCards.map((card) => (
+                <option key={card.id} value={card.id}>
+                  {card.title}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
 
         <div aria-label="后台功能模块" className="admin-tab-strip" role="tablist">
