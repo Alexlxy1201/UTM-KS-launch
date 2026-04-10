@@ -453,26 +453,38 @@ body {
 
 .admin-topbar {
   position: sticky;
-  top: 18px;
+  top: 14px;
   z-index: 24;
   display: grid;
-  gap: 18px;
+  gap: 12px;
+  padding: 20px 22px;
+}
+
+.admin-topbar h2 {
+  margin: 4px 0 0;
+  font-size: clamp(1.45rem, 2vw, 1.8rem);
+}
+
+.admin-topbar .panel-subtext {
+  margin-top: 6px;
+  font-size: 0.94rem;
+  line-height: 1.5;
 }
 
 .admin-topbar-row {
   display: flex;
   justify-content: space-between;
-  gap: 18px;
+  gap: 14px;
   align-items: flex-start;
 }
 
 .admin-save-slot {
-  min-width: min(380px, 100%);
+  min-width: min(320px, 100%);
   display: flex;
-  gap: 16px;
+  gap: 12px;
   align-items: center;
-  padding: 16px 18px;
-  border-radius: 22px;
+  padding: 12px 14px;
+  border-radius: 18px;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-sm);
@@ -491,19 +503,21 @@ body {
 
 .admin-save-slot-copy {
   display: grid;
-  gap: 4px;
+  gap: 3px;
 }
 
 .admin-save-slot-copy p {
   margin: 0;
   color: var(--ink-muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
 }
 
 .admin-tab-strip {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -513,11 +527,11 @@ body {
 }
 
 .admin-tab-button {
-  flex: 0 0 208px;
+  flex: 0 0 176px;
   display: grid;
-  gap: 6px;
-  padding: 14px 16px;
-  border-radius: 20px;
+  gap: 4px;
+  padding: 11px 13px;
+  border-radius: 16px;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.76);
   box-shadow: var(--shadow-sm);
@@ -525,13 +539,12 @@ body {
 }
 
 .admin-tab-button strong {
-  font-size: 0.98rem;
+  font-size: 0.95rem;
   color: var(--ink);
 }
 
 .admin-tab-button small {
-  color: var(--ink-muted);
-  line-height: 1.45;
+  display: none;
 }
 
 .admin-tab-button.active {
@@ -1620,13 +1633,14 @@ button:active,
 
   .admin-topbar {
     top: 10px;
+    padding: 16px 16px 18px;
   }
 
   .admin-save-slot {
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
-    padding: 14px 16px;
+    gap: 10px;
+    padding: 12px 14px;
   }
 
   .admin-tab-strip {
@@ -1634,12 +1648,8 @@ button:active,
   }
 
   .admin-tab-button {
-    flex: 0 0 164px;
+    flex: 0 0 144px;
     scroll-snap-align: start;
-  }
-
-  .admin-tab-button small {
-    display: none;
   }
 
   .confirm-actions {

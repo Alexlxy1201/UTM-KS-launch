@@ -877,7 +877,7 @@ export function AdminView(props: AdminViewProps) {
           <div>
             <span className="section-tag">功能导览</span>
             <h2>后台功能模块</h2>
-            <p className="panel-subtext">点击下方按钮即可切换模块页面，保存按钮固定放在这一栏中。</p>
+            <p className="panel-subtext">点击下方标签切换模块，保存按钮固定在本栏。</p>
           </div>
           <div className={`admin-save-slot ${props.hasPendingChanges ? 'dirty' : 'clean'}`}>
             {props.hasPendingChanges ? (
@@ -885,7 +885,7 @@ export function AdminView(props: AdminViewProps) {
                 <div className="admin-save-slot-copy">
                   <span className="mini-label">待保存修改</span>
                   <strong>当前有未保存内容</strong>
-                  <p>配置、收款码、菜单或用户资料存在更新。</p>
+                  <p>配置、收款码、菜单或用户资料已更新。</p>
                 </div>
                 <button
                   className="primary-button admin-save-button"
@@ -900,7 +900,7 @@ export function AdminView(props: AdminViewProps) {
               <div className="admin-save-slot-copy">
                 <span className="mini-label">保存状态</span>
                 <strong>当前没有未保存修改</strong>
-                <p>当页面内容发生变更后，保存按钮会直接显示在这里。</p>
+                <p>页面内容变更后，可直接在这里保存。</p>
               </div>
             )}
           </div>
@@ -914,6 +914,7 @@ export function AdminView(props: AdminViewProps) {
               className={`admin-tab-button ${card.id === activeModuleId ? 'active' : ''}`}
               onClick={() => openModule(card.id)}
               role="tab"
+              title={card.description}
               type="button"
             >
               <span className="mini-label">{card.meta}</span>
