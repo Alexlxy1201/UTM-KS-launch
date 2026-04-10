@@ -339,6 +339,7 @@ export function AdminView(props: AdminViewProps) {
     customerName: order.customerName,
     meals: order.items.map((item) => item.mealName),
   }))
+  const activeModule = moduleCards.find((card) => card.id === activeModuleId) ?? moduleCards[0]
 
   function openModule(nextId: AdminModuleId) {
     if (nextId === activeModuleId) return
@@ -871,17 +872,45 @@ export function AdminView(props: AdminViewProps) {
   }
 
   return (
-    <main className="admin-layout single-column">
+    <main className="admin-layout single-column admin-console">
       <section className="panel admin-toolbar">
-        <div className="admin-toolbar-row">
-          <div className="admin-toolbar-copy">
-            <span className="section-tag">功能模块</span>
-            <h2>后台功能模块</h2>
+        <div className="admin-toolbar-head">
+          <div className="admin-toolbar-title">
+            <span className="section-tag">UTM-KS Launch</span>
+            <h1>管理后台</h1>
+            <p className="admin-toolbar-subtext">订单、支付、菜单和用户资料统一在这里处理。</p>
           </div>
-          <button className="secondary-button admin-toolbar-signout" onClick={props.onAdminSignOut} type="button">
-            退出登录
-          </button>
+          <div className="admin-toolbar-actions">
+            {props.hasPendingChanges ? (
+              <button
+                className="primary-button admin-toolbar-save"
+                disabled={props.saveAllPending || props.isBusy}
+                onClick={props.onSaveAll}
+                type="button"
+              >
+                {props.saveAllPending ? '保存中...' : '保存修改'}
+              </button>
+            ) : (
+              <span className="admin-toolbar-state clean">当前内容已同步</span>
+            )}
+            <button className="secondary-button admin-toolbar-signout" onClick={props.onAdminSignOut} type="button">
+              退出登录
+            </button>
+          </div>
         </div>
+
+        <div className="admin-toolbar-status">
+          <span className="admin-toolbar-module-chip">
+            当前模块
+            <strong>{activeModule.title}</strong>
+          </span>
+          {props.adminSessionEmail ? <span className="admin-toolbar-account">{props.adminSessionEmail}</span> : null}
+          <span className={`admin-toolbar-state ${props.hasPendingChanges ? 'dirty' : 'clean'}`}>
+            {props.hasPendingChanges ? '检测到未保存修改' : '保存后会自动刷新'}
+          </span>
+          <span className="badge dark">{props.isSwitching ? '切换中...' : '管理模式'}</span>
+        </div>
+
         <div aria-label="后台功能模块" className="admin-toolbar-tabs" role="tablist">
           {moduleCards.map((card) => (
             <button
@@ -893,28 +922,10 @@ export function AdminView(props: AdminViewProps) {
               title={card.description}
               type="button"
             >
-              {card.title}
+              <span>{card.title}</span>
+              <small>{card.meta}</small>
             </button>
           ))}
-          {props.hasPendingChanges ? (
-            <button
-              className="primary-button admin-toolbar-save"
-              disabled={props.saveAllPending || props.isBusy}
-              onClick={props.onSaveAll}
-              type="button"
-            >
-              {props.saveAllPending ? '保存中...' : '保存修改'}
-            </button>
-          ) : null}
-        </div>
-        <div className="admin-toolbar-meta">
-          {props.adminSessionEmail ? <span className="badge accent">{props.adminSessionEmail}</span> : null}
-          <span className="badge dark">{props.isSwitching ? '切换中...' : '管理模式'}</span>
-          {props.hasPendingChanges ? (
-            <span className="badge warn">保存后会自动刷新当前后台数据</span>
-          ) : (
-            <span className="badge ok">当前内容已同步</span>
-          )}
         </div>
       </section>
 
