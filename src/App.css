@@ -1184,22 +1184,51 @@ tbody tr:last-child td {
   align-items: flex-start;
 }
 
+.user-manage-identity {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+
 .user-manage-card-head strong {
   display: block;
   font-size: 1.05rem;
 }
 
-.user-manage-card-head p {
-  margin: 6px 0 0;
+.user-manage-account {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(214, 178, 124, 0.12);
   color: var(--ink-soft);
+  font-size: 0.92rem;
+  overflow-wrap: anywhere;
+}
+
+.user-manage-reset {
+  flex-shrink: 0;
+  align-self: flex-start;
 }
 
 .user-manage-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 24px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
   color: var(--ink-soft);
   font-size: 0.92rem;
+}
+
+.user-manage-meta span {
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(214, 178, 124, 0.18);
+  overflow-wrap: anywhere;
 }
 
 .admin-module-grid {
@@ -1407,8 +1436,7 @@ button:active,
   }
 
   .user-manage-meta {
-    flex-direction: column;
-    gap: 8px;
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1509,6 +1537,20 @@ button:active,
 
   .confirm-actions {
     flex-direction: column-reverse;
+  }
+
+  .user-manage-card {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .user-manage-reset {
+    width: 100%;
+  }
+
+  .user-manage-account {
+    width: 100%;
+    border-radius: 14px;
   }
 
   .nav-chip,

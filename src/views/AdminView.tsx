@@ -592,12 +592,12 @@ export function AdminView(props: AdminViewProps) {
             props.managedUsers.map((user) => (
               <article key={user.userId} className="user-manage-card">
                 <div className="user-manage-card-head">
-                  <div>
+                  <div className="user-manage-identity">
                     <strong>{user.fullName}</strong>
-                    <p>{user.username}</p>
+                    <p className="user-manage-account">{user.username}</p>
                   </div>
                   <button
-                    className="secondary-button"
+                    className="secondary-button user-manage-reset"
                     disabled={props.resettingUserId === user.userId}
                     onClick={() =>
                       props.onResetManagedUserPassword(user.userId, {
