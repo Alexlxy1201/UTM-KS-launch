@@ -1303,32 +1303,34 @@ function App() {
             title={heroCopy.title}
           />
 
-          <TopNav
-            activeView={activeView}
-            canAccessAdminPage={canAccessAdminPage}
-            canAccessUserPage={canAccessUserPage}
-            onRefresh={() => {
-              if (!ensureBackendReady('刷新数据')) return
+          {activeView !== 'admin' ? (
+            <TopNav
+              activeView={activeView}
+              canAccessAdminPage={canAccessAdminPage}
+              canAccessUserPage={canAccessUserPage}
+              onRefresh={() => {
+                if (!ensureBackendReady('刷新数据')) return
 
-              void (async () => {
-                try {
-                  await refreshLiveSlices(getRefreshScopeForView(activeView))
-                  setNotice({
-                    tone: 'success',
-                    title: '数据已更新',
-                    description: '当前页面所需数据已重新同步。',
-                  })
-                } catch (error) {
-                  setNotice({
-                    tone: 'warning',
-                    title: '刷新数据失败',
-                    description: getErrorMessage(error, '请稍后重试，或检查数据库连接是否正常。'),
-                  })
-                }
-              })()
-            }}
-            onSwitch={switchView}
-          />
+                void (async () => {
+                  try {
+                    await refreshLiveSlices(getRefreshScopeForView(activeView))
+                    setNotice({
+                      tone: 'success',
+                      title: '数据已更新',
+                      description: '当前页面所需数据已重新同步。',
+                    })
+                  } catch (error) {
+                    setNotice({
+                      tone: 'warning',
+                      title: '刷新数据失败',
+                      description: getErrorMessage(error, '请稍后重试，或检查数据库连接是否正常。'),
+                    })
+                  }
+                })()
+              }}
+              onSwitch={switchView}
+            />
+          ) : null}
         </>
       ) : null}
 
@@ -1510,6 +1512,26 @@ function App() {
           onDeleteOrder={(orderId) => void handleDeleteOrder(orderId)}
           onGoHome={() => void openPublicView('home')}
           onQrFilePick={(channel, file) => void handleQrFilePick(channel, file)}
+          onRefreshData={() => {
+            if (!ensureBackendReady('刷新数据')) return
+
+            void (async () => {
+              try {
+                await refreshLiveSlices({ public: false, user: false, admin: true })
+                setNotice({
+                  tone: 'success',
+                  title: '数据已更新',
+                  description: '管理后台数据已重新同步。',
+                })
+              } catch (error) {
+                setNotice({
+                  tone: 'warning',
+                  title: '刷新数据失败',
+                  description: getErrorMessage(error, '请稍后重试，或检查数据库连接是否正常。'),
+                })
+              }
+            })()
+          }}
           onRefreshExchangeRate={() => void handleRefreshExchangeRate()}
           onResetManagedUserPassword={(userId, payload) =>
             void handleResetManagedUserPassword(userId, payload)

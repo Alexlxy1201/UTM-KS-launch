@@ -82,6 +82,7 @@ type AdminViewProps = {
   onSaveAll: () => void
   onAdminSignOut: () => void
   onGoHome: () => void
+  onRefreshData: () => void
   onQrFilePick: (channel: PaymentChannel, file: File | null) => void
 }
 
@@ -339,9 +340,6 @@ export function AdminView(props: AdminViewProps) {
     customerName: order.customerName,
     meals: order.items.map((item) => item.mealName),
   }))
-
-  const activeModule = moduleCards.find((card) => card.id === activeModuleId) ?? moduleCards[0]
-  const activeModuleIndex = moduleCards.findIndex((card) => card.id === activeModuleId)
 
   function openModule(nextId: AdminModuleId) {
     if (nextId === activeModuleId) return
@@ -875,53 +873,21 @@ export function AdminView(props: AdminViewProps) {
 
   return (
     <main className="admin-layout single-column">
-      <section className="panel admin-topbar">
-        <div className="admin-topbar-row">
-          <div className="admin-topbar-copy">
-            <span className="section-tag">功能导览</span>
-            <h2>后台功能模块</h2>
-            <p className="panel-subtext">
-              手机端可直接使用下方选择器切换模块，保存入口固定在这里。
-            </p>
+      <section className="panel admin-toolbar">
+        <div className="admin-toolbar-row">
+          <div className="admin-toolbar-nav">
+            <button className="nav-chip" onClick={props.onGoHome} type="button">
+              首页
+            </button>
+            <button className="nav-chip active" type="button">
+              管理后台
+            </button>
+            <button className="ghost-action admin-toolbar-refresh" onClick={props.onRefreshData} type="button">
+              刷新数据
+            </button>
           </div>
-          <div className={`admin-save-slot ${props.hasPendingChanges ? 'dirty' : 'clean'}`}>
-            {props.hasPendingChanges ? (
-              <>
-                <div className="admin-save-slot-copy">
-                  <span className="mini-label">待保存修改</span>
-                  <strong>当前有未保存内容</strong>
-                  <p>配置、收款码、菜单或用户资料已更新。</p>
-                </div>
-                <button
-                  className="primary-button admin-save-button"
-                  disabled={props.saveAllPending || props.isBusy}
-                  onClick={props.onSaveAll}
-                  type="button"
-                >
-                  {props.saveAllPending ? '保存中...' : '保存全部修改'}
-                </button>
-              </>
-            ) : (
-              <div className="admin-save-slot-copy">
-                <span className="mini-label">保存状态</span>
-                <strong>当前没有未保存修改</strong>
-                <p>页面内容变更后，可直接在这里保存。</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="admin-mobile-switch" aria-label="手机端模块切换">
-          <div className="admin-mobile-switch-copy">
-            <span className="mini-label">
-              当前模块 · {activeModuleIndex + 1}/{moduleCards.length}
-            </span>
-            <strong>{activeModule.title}</strong>
-            <p>{activeModule.description}</p>
-            <small className="admin-mobile-switch-meta">{activeModule.meta}</small>
-          </div>
-          <label className="admin-mobile-switch-field">
-            <span className="mini-label">切换模块</span>
+          <label className="admin-toolbar-select">
+            <span className="mini-label">功能模块</span>
             <select
               aria-label="切换后台模块"
               onChange={(event) => openModule(event.target.value as AdminModuleId)}
@@ -934,34 +900,26 @@ export function AdminView(props: AdminViewProps) {
               ))}
             </select>
           </label>
-        </div>
-
-        <div aria-label="后台功能模块" className="admin-tab-strip" role="tablist">
-          {moduleCards.map((card) => (
-            <button
-              key={card.id}
-              aria-selected={card.id === activeModuleId}
-              className={`admin-tab-button ${card.id === activeModuleId ? 'active' : ''}`}
-              onClick={() => openModule(card.id)}
-              role="tab"
-              title={card.description}
-              type="button"
-            >
-              <span className="mini-label">模块</span>
-              <strong>{card.title}</strong>
-              <small>{card.meta}</small>
-            </button>
-          ))}
-        </div>
-
-        <div className="panel-actions">
-          {props.adminSessionEmail ? <span className="badge accent">{props.adminSessionEmail}</span> : null}
-          {props.isLiveMode ? (
-            <button className="ghost-action compact" onClick={props.onAdminSignOut} type="button">
+          <div className="admin-toolbar-actions">
+            {props.hasPendingChanges ? (
+              <button
+                className="primary-button admin-toolbar-save"
+                disabled={props.saveAllPending || props.isBusy}
+                onClick={props.onSaveAll}
+                type="button"
+              >
+                {props.saveAllPending ? '保存中...' : '保存修改'}
+              </button>
+            ) : null}
+            <button className="secondary-button admin-toolbar-signout" onClick={props.onAdminSignOut} type="button">
               退出登录
             </button>
-          ) : null}
+          </div>
+        </div>
+        <div className="admin-toolbar-meta">
+          {props.adminSessionEmail ? <span className="badge accent">{props.adminSessionEmail}</span> : null}
           <span className="badge dark">{props.isSwitching ? '切换中...' : '管理模式'}</span>
+          {props.hasPendingChanges ? <span className="badge warn">当前有未保存修改</span> : null}
         </div>
       </section>
 

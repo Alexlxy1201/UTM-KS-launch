@@ -591,6 +591,65 @@ body {
   line-height: 1.4;
 }
 
+.admin-toolbar {
+  position: sticky;
+  top: 14px;
+  z-index: 24;
+  display: grid;
+  gap: 10px;
+  padding: 16px 18px;
+}
+
+.admin-toolbar-row {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.admin-toolbar-nav,
+.admin-toolbar-actions,
+.admin-toolbar-meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+
+.admin-toolbar-select {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.admin-toolbar-select .mini-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+}
+
+.admin-toolbar-select select {
+  min-width: 0;
+}
+
+.admin-toolbar-actions {
+  justify-content: flex-end;
+}
+
+.admin-toolbar-refresh {
+  margin-left: 0;
+}
+
+.admin-toolbar-save,
+.admin-toolbar-signout {
+  min-width: 110px;
+}
+
+.admin-toolbar-meta {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
 .admin-module-stage {
   min-height: 240px;
 }
@@ -1756,6 +1815,59 @@ button:active,
     border-radius: 16px;
   }
 
+  .admin-toolbar {
+    top: 8px;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .admin-toolbar-row {
+    grid-template-columns: auto auto minmax(112px, 1fr) auto;
+    gap: 8px;
+  }
+
+  .admin-toolbar-nav {
+    display: contents;
+  }
+
+  .admin-toolbar-select {
+    gap: 0;
+  }
+
+  .admin-toolbar-select .mini-label {
+    display: none;
+  }
+
+  .admin-toolbar-actions {
+    display: contents;
+  }
+
+  .admin-toolbar-save,
+  .admin-toolbar-signout,
+  .admin-toolbar-refresh,
+  .admin-toolbar .nav-chip,
+  .admin-toolbar .ghost-action {
+    min-width: 0;
+    width: auto;
+    padding: 10px 12px;
+    min-height: 40px;
+    font-size: 0.88rem;
+    border-radius: 14px;
+    white-space: nowrap;
+  }
+
+  .admin-toolbar-select select {
+    min-height: 40px;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    border-radius: 14px;
+  }
+
+  .admin-toolbar-meta {
+    display: none;
+  }
+
   .admin-topbar-row {
     gap: 8px;
   }
@@ -1998,6 +2110,7 @@ button:active,
   .hero-panel,
   .panel,
   .auth-card,
+  .admin-toolbar,
   .admin-topbar,
   .admin-mobile-switch,
   .admin-save-slot {
@@ -2014,6 +2127,19 @@ button:active,
 
   .admin-topbar .panel-actions .badge.accent {
     grid-column: auto;
+  }
+
+  .admin-toolbar-row {
+    grid-template-columns: auto auto minmax(96px, 1fr) auto;
+    gap: 6px;
+  }
+
+  .admin-toolbar .nav-chip,
+  .admin-toolbar .ghost-action,
+  .admin-toolbar-save,
+  .admin-toolbar-signout {
+    padding: 10px;
+    font-size: 0.84rem;
   }
 
   .hero-copy h1 {
