@@ -1,5 +1,5 @@
 ﻿import type { Session } from '@supabase/supabase-js'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useEffectEvent, useMemo, useState } from 'react'
 import './App.css'
 import { ConfirmPrompt } from './components/ConfirmPrompt'
 import { HeroHeader } from './components/HeroHeader'
@@ -275,75 +275,72 @@ function App() {
     }
   }, [])
 
-  const syncSessionContext = useCallback(
-    async (session: Session | null) => {
-      setCurrentSession(session)
+  const syncSessionContext = useEffectEvent(async (session: Session | null) => {
+    setCurrentSession(session)
 
-      if (!session) {
-        setCurrentUserProfile(null)
-        setUserOrders([])
-        setIsAdminAuthorized(false)
-        setAdminOrders([])
-        setPayments([])
-        setManagedUsers([])
-        setAdminConfigBaseline(null)
-        setAdminMenuBaseline([])
-        setAdminUsersBaseline([])
-        if (activeView === 'user' || activeView === 'user-center' || activeView === 'admin') {
-          setActiveView('home')
-        }
-        return
+    if (!session) {
+      setCurrentUserProfile(null)
+      setUserOrders([])
+      setIsAdminAuthorized(false)
+      setAdminOrders([])
+      setPayments([])
+      setManagedUsers([])
+      setAdminConfigBaseline(null)
+      setAdminMenuBaseline([])
+      setAdminUsersBaseline([])
+      if (activeView === 'user' || activeView === 'user-center' || activeView === 'admin') {
+        setActiveView('home')
       }
+      return
+    }
 
-      const [, admin] = await Promise.all([refreshUserData(), checkIsAdmin()])
-      setIsAdminAuthorized(admin)
+    const [, admin] = await Promise.all([refreshUserData(), checkIsAdmin()])
+    setIsAdminAuthorized(admin)
 
-      if (admin) {
-        await refreshAdminData(true)
-      } else {
-        setAdminOrders([])
-        setPayments([])
-        setManagedUsers([])
-        setAdminConfigBaseline(null)
-        setAdminMenuBaseline([])
-        setAdminUsersBaseline([])
-      }
+    if (admin) {
+      await refreshAdminData(true)
+    } else {
+      setAdminOrders([])
+      setPayments([])
+      setManagedUsers([])
+      setAdminConfigBaseline(null)
+      setAdminMenuBaseline([])
+      setAdminUsersBaseline([])
+    }
 
-      if (requestedAuthView === 'admin') {
-        setRequestedAuthView(null)
-        if (admin) {
-          setActiveView('admin')
-        } else {
-          setActiveView('admin-login')
-          setNotice({
-            tone: 'warning',
-            title: '当前账户无后台访问权限',
-            description: '请使用已加入管理员名单的内部账户登录管理后台。',
-          })
-        }
-        return
-      }
-
-      if (requestedAuthView === 'user') {
-        setRequestedAuthView(null)
-        setActiveView(activeView === 'user-center' ? 'user-center' : 'user')
-        return
-      }
-
+    if (requestedAuthView === 'admin') {
+      setRequestedAuthView(null)
       if (admin) {
         setActiveView('admin')
-      } else if (activeView === 'user' || activeView === 'user-center') {
-        setActiveView(activeView)
       } else {
-        setActiveView('user')
+        setActiveView('admin-login')
+        setNotice({
+          tone: 'warning',
+          title: '当前账户无后台访问权限',
+          description: '请使用已加入管理员名单的内部账户登录管理后台。',
+        })
       }
+      return
+    }
 
-      void cleanupExpiredPaymentProofs().catch(() => {
-        return null
-      })
-    },
-    [activeView, refreshAdminData, refreshUserData, requestedAuthView],
-  )
+    if (requestedAuthView === 'user') {
+      setRequestedAuthView(null)
+      setActiveView(activeView === 'user-center' ? 'user-center' : 'user')
+      return
+    }
+
+    if (admin) {
+      setActiveView('admin')
+    } else if (activeView === 'user' || activeView === 'user-center') {
+      setActiveView(activeView)
+    } else {
+      setActiveView('user')
+    }
+
+    void cleanupExpiredPaymentProofs().catch(() => {
+      return null
+    })
+  })
 
   useEffect(() => {
     if (!isLiveMode) {
@@ -406,7 +403,7 @@ function App() {
       mounted = false
       subscription.data.subscription.unsubscribe()
     }
-  }, [refreshPublicData, syncSessionContext])
+  }, [refreshPublicData])
 
   useEffect(() => {
     if (!notice) return
