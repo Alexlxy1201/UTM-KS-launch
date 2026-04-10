@@ -371,22 +371,24 @@ export function UserView(props: UserViewProps) {
                       </span>
                     </td>
                     <td className="table-action-cell" data-label="操作">
-                      <button
-                        className="table-action"
-                        disabled={props.openingProofPath === order.paymentProofName}
-                        onClick={() =>
-                          order.paymentStatus === '已付'
-                            ? props.onViewOrderProof(order)
-                            : props.onUseOrderForPayment(order.id)
-                        }
-                        type="button"
-                      >
-                        {order.paymentStatus === '已付'
-                          ? props.openingProofPath === order.paymentProofName
-                            ? '打开中...'
-                            : '查看订单'
-                          : '继续付款'}
-                      </button>
+                      <div className="table-action-stack">
+                        <button
+                          className="table-action"
+                          disabled={props.openingProofPath === order.paymentProofName}
+                          onClick={() =>
+                            order.paymentStatus === '已付'
+                              ? props.onViewOrderProof(order)
+                              : props.onUseOrderForPayment(order.id)
+                          }
+                          type="button"
+                        >
+                          {order.paymentStatus === '已付'
+                            ? props.openingProofPath === order.paymentProofName
+                              ? '打开中...'
+                              : '查看订单'
+                            : '继续付款'}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

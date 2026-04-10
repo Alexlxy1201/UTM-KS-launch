@@ -1147,6 +1147,13 @@ tbody tr:last-child td {
   white-space: nowrap;
 }
 
+.table-action-stack {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .status-pill.paid {
   background: rgba(224, 248, 238, 0.95);
   color: #165e4b;
@@ -1471,6 +1478,10 @@ button:active,
     border-radius: 24px;
   }
 
+  .panel-subtext {
+    font-size: 0.94rem;
+  }
+
   .hero-copy h1 {
     font-size: clamp(2rem, 8vw, 2.8rem);
   }
@@ -1497,11 +1508,87 @@ button:active,
   .menu-admin-top {
     width: 100%;
     justify-content: stretch;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .exchange-card {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .summary-strip > div,
+  .metric-card,
+  .summary-card,
+  .tip-card,
+  .upload-box,
+  .empty-state,
+  .menu-admin-card,
+  .payment-order-card,
+  .payment-qr-card,
+  .qr-upload-card,
+  .today-order-card {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .compact-profile > div:not(.profile-actions) {
+    padding: 12px 14px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.58);
+    border: 1px solid rgba(214, 178, 124, 0.18);
+  }
+
+  .profile-actions .secondary-button,
+  .panel-actions .ghost-action,
+  .panel-actions .badge,
+  .cta-row .primary-button,
+  .cta-row .secondary-button,
+  .payment-qr-card > .secondary-button,
+  .admin-save-slot .primary-button,
+  .admin-save-slot .secondary-button {
+    width: 100%;
+  }
+
+  .panel-actions .badge {
+    justify-content: center;
+  }
+
+  .summary-strip,
+  .metric-grid,
+  .my-order-summary,
+  .payment-methods,
+  .today-order-grid {
+    gap: 12px;
+  }
+
+  .payment-methods {
+    grid-template-columns: 1fr;
+  }
+
+  .meal-card,
+  .payment-method,
+  .admin-tab-button {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .payment-order-card {
+    gap: 14px;
+  }
+
+  .payment-amounts {
+    gap: 10px;
+  }
+
+  .payment-qr-card {
+    justify-items: stretch;
+  }
+
+  .payment-qr-image,
+  .qr-upload-image {
+    width: min(100%, 240px);
+    margin: 0 auto;
   }
 
   .today-order-head {
@@ -1533,6 +1620,26 @@ button:active,
 
   .admin-topbar {
     top: 10px;
+  }
+
+  .admin-save-slot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .admin-tab-strip {
+    scroll-snap-type: x proximity;
+  }
+
+  .admin-tab-button {
+    flex: 0 0 164px;
+    scroll-snap-align: start;
+  }
+
+  .admin-tab-button small {
+    display: none;
   }
 
   .confirm-actions {
@@ -1641,6 +1748,34 @@ button:active,
   }
 
   .table-action-cell {
-    align-items: center;
+    white-space: normal;
+  }
+
+  .responsive-table .table-action-cell {
+    display: block;
+    padding-top: 12px;
+    text-align: left;
+  }
+
+  .responsive-table .table-action-cell::before {
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .responsive-table .table-action-stack {
+    display: grid;
+    gap: 8px;
+    justify-content: stretch;
+  }
+
+  .responsive-table .table-action-stack .table-action,
+  .responsive-table .table-action-stack .badge {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .responsive-table td > select,
+  .responsive-table td > .status-pill {
+    margin-left: auto;
   }
 }

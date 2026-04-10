@@ -543,26 +543,28 @@ export function AdminView(props: AdminViewProps) {
                       </select>
                     </td>
                     <td className="table-action-cell" data-label="操作">
-                      {order.paymentProofName ? (
+                      <div className="table-action-stack">
+                        {order.paymentProofName ? (
+                          <button
+                            className="table-action ghost"
+                            disabled={props.openingProofPath === order.paymentProofName}
+                            onClick={() =>
+                              props.onViewPaymentProof(order.paymentProofName!, order.callbackTime ?? order.createdAt)
+                            }
+                            type="button"
+                          >
+                            {props.openingProofPath === order.paymentProofName ? '打开中...' : '查看截图'}
+                          </button>
+                        ) : null}
                         <button
-                          className="table-action ghost"
-                          disabled={props.openingProofPath === order.paymentProofName}
-                          onClick={() =>
-                            props.onViewPaymentProof(order.paymentProofName!, order.callbackTime ?? order.createdAt)
-                          }
+                          className="table-action danger"
+                          disabled={props.isBusy}
+                          onClick={() => props.onDeleteOrder(order.id)}
                           type="button"
                         >
-                          {props.openingProofPath === order.paymentProofName ? '打开中...' : '查看截图'}
+                          删除
                         </button>
-                      ) : null}
-                      <button
-                        className="table-action danger"
-                        disabled={props.isBusy}
-                        onClick={() => props.onDeleteOrder(order.id)}
-                        type="button"
-                      >
-                        删除
-                      </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -795,18 +797,20 @@ export function AdminView(props: AdminViewProps) {
                       <span className={`status-pill ${getStatusTone(payment.status)}`}>{payment.status}</span>
                     </td>
                     <td className="table-action-cell" data-label="截图">
-                      {isProofExpired(payment.uploadedAt) ? (
-                        <span className="badge warn">已过期</span>
-                      ) : (
-                        <button
-                          className="table-action"
-                          disabled={props.openingProofPath === payment.proofName}
-                          onClick={() => props.onViewPaymentProof(payment.proofName, payment.uploadedAt)}
-                          type="button"
-                        >
-                          {props.openingProofPath === payment.proofName ? '打开中...' : '查看截图'}
-                        </button>
-                      )}
+                      <div className="table-action-stack">
+                        {isProofExpired(payment.uploadedAt) ? (
+                          <span className="badge warn">已过期</span>
+                        ) : (
+                          <button
+                            className="table-action"
+                            disabled={props.openingProofPath === payment.proofName}
+                            onClick={() => props.onViewPaymentProof(payment.proofName, payment.uploadedAt)}
+                            type="button"
+                          >
+                            {props.openingProofPath === payment.proofName ? '打开中...' : '查看截图'}
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))
