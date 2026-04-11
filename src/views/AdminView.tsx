@@ -333,6 +333,13 @@ export function AdminView(props: AdminViewProps) {
     },
   ]
 
+  const activeModule = moduleCards.find((card) => card.id === activeModuleId) ?? moduleCards[0]
+  const activeModuleIndex = moduleCards.findIndex((card) => card.id === activeModuleId)
+  const todayPaidRate =
+    props.todayOverview.totalOrders > 0
+      ? `${Math.round((props.todayOverview.paidOrders / props.todayOverview.totalOrders) * 100)}% 已付`
+      : '今日暂无订单'
+
   const filteredOrders = useMemo(() => {
     const keyword = props.adminSearch.trim().toLowerCase()
     if (!keyword) return props.orders
@@ -448,8 +455,8 @@ export function AdminView(props: AdminViewProps) {
           </div>
           <span className="badge ok">{todayOrderDigest.length} 笔</span>
         </div>
-        <div className="table-wrap compact-table mobile-scroll-table">
-          <table>
+        <div className="table-wrap responsive-card-wrap">
+          <table className="responsive-table">
             <thead>
               <tr>
                 <th>时间</th>
@@ -461,9 +468,9 @@ export function AdminView(props: AdminViewProps) {
               {todayOrderDigest.length ? (
                 todayOrderDigest.map((order) => (
                   <tr key={order.id}>
-                    <td>{order.time}</td>
-                    <td>{order.customerName}</td>
-                    <td>{order.meals.join('、')}</td>
+                    <td data-label="时间">{order.time}</td>
+                    <td data-label="姓名">{order.customerName}</td>
+                    <td data-label="菜品">{order.meals.join('、')}</td>
                   </tr>
                 ))
               ) : (
@@ -799,8 +806,8 @@ export function AdminView(props: AdminViewProps) {
             <span className="badge warn">截图保留 7 天</span>
           </div>
         </div>
-        <div className="table-wrap compact-table mobile-scroll-table">
-          <table>
+        <div className="table-wrap responsive-card-wrap">
+          <table className="responsive-table">
             <thead>
               <tr>
                 <th>上传时间</th>
@@ -946,8 +953,8 @@ export function AdminView(props: AdminViewProps) {
           </div>
         </section>
 
-        <div className="table-wrap compact-table mobile-scroll-table">
-          <table>
+        <div className="table-wrap responsive-card-wrap">
+          <table className="responsive-table">
             <thead>
               <tr>
                 <th>日期</th>
@@ -964,14 +971,14 @@ export function AdminView(props: AdminViewProps) {
               {statsSummary.rows.length ? (
                 statsSummary.rows.map((row) => (
                   <tr key={row.date}>
-                    <td>{row.date}</td>
-                    <td>{formatCurrency(row.totalSold, 'RM')}</td>
-                    <td>{formatCurrency(row.totalCost, 'RM')}</td>
-                    <td>{formatCurrency(row.totalProfit, 'RM')}</td>
-                    <td>{row.paidOrders}</td>
-                    <td>{formatCurrency(row.extraIncome, 'RM')}</td>
-                    <td>{formatCurrency(row.extraExpense, 'RM')}</td>
-                    <td>{row.note || '—'}</td>
+                    <td data-label="日期">{row.date}</td>
+                    <td data-label="总售出">{formatCurrency(row.totalSold, 'RM')}</td>
+                    <td data-label="总成本">{formatCurrency(row.totalCost, 'RM')}</td>
+                    <td data-label="总利润">{formatCurrency(row.totalProfit, 'RM')}</td>
+                    <td data-label="已付订单数">{row.paidOrders}</td>
+                    <td data-label="附加收入">{formatCurrency(row.extraIncome, 'RM')}</td>
+                    <td data-label="附加支出">{formatCurrency(row.extraExpense, 'RM')}</td>
+                    <td data-label="备注">{row.note || '—'}</td>
                   </tr>
                 ))
               ) : (
@@ -995,12 +1002,76 @@ export function AdminView(props: AdminViewProps) {
           <div className="admin-toolbar-title">
             <span className="section-tag">UTM-KS Launch</span>
             <h1>管理后台</h1>
+            <p className="admin-toolbar-subtext">
+              手机端可直接使用下方选择器切换模块，修改内容后可在顶部或底部统一保存。
+            </p>
           </div>
           <div className="admin-toolbar-actions">
+            {props.hasPendingChanges ? (
+              <button
+                className="primary-button admin-toolbar-save"
+                disabled={props.saveAllPending || props.isBusy}
+                onClick={props.onSaveAll}
+                type="button"
+              >
+                {props.saveAllPending ? '保存中...' : '保存修改'}
+              </button>
+            ) : null}
             <button className="secondary-button admin-toolbar-signout" onClick={props.onAdminSignOut} type="button">
               退出登录
             </button>
           </div>
+        </div>
+
+        <div className="admin-toolbar-summary">
+          <article className="admin-toolbar-stat active">
+            <span>当前模块</span>
+            <strong>{activeModule.title}</strong>
+            <p>
+              第 {activeModuleIndex + 1} / {moduleCards.length} 项 · {activeModule.meta}
+            </p>
+          </article>
+          <article className={`admin-toolbar-stat ${props.hasPendingChanges ? 'pending' : ''}`}>
+            <span>保存状态</span>
+            <strong>{props.hasPendingChanges ? '有待保存修改' : '已全部保存'}</strong>
+            <p>
+              {props.hasPendingChanges
+                ? '配置、菜单、用户资料或统计备注已被修改。'
+                : '当前页面内容已与数据库同步。'}
+            </p>
+          </article>
+          <article className="admin-toolbar-stat">
+            <span>今日概览</span>
+            <strong>{todayPaidRate}</strong>
+            <p>
+              {props.todayOverview.totalOrders} 笔订单 · {formatCurrency(props.todayOverview.totalSold, 'RM')}
+            </p>
+          </article>
+        </div>
+
+        <div className="admin-mobile-switch" aria-label="手机端模块切换">
+          <div className="admin-mobile-switch-copy">
+            <span className="mini-label">
+              当前模块 · {activeModuleIndex + 1}/{moduleCards.length}
+            </span>
+            <strong>{activeModule.title}</strong>
+            <p>{activeModule.description}</p>
+            <small className="admin-mobile-switch-meta">{activeModule.meta}</small>
+          </div>
+          <label className="admin-mobile-switch-field">
+            <span className="mini-label">切换模块</span>
+            <select
+              aria-label="切换后台模块"
+              onChange={(event) => openModule(event.target.value as AdminModuleId)}
+              value={activeModuleId}
+            >
+              {moduleCards.map((card) => (
+                <option key={card.id} value={card.id}>
+                  {card.title}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
 
         <div aria-label="后台功能模块" className="admin-toolbar-tabs" role="tablist">
@@ -1017,22 +1088,30 @@ export function AdminView(props: AdminViewProps) {
               {card.title}
             </button>
           ))}
-          {props.hasPendingChanges ? (
-            <button
-              className="primary-button admin-toolbar-save"
-              disabled={props.saveAllPending || props.isBusy}
-              onClick={props.onSaveAll}
-              type="button"
-            >
-              {props.saveAllPending ? '保存中...' : '保存修改'}
-            </button>
-          ) : null}
         </div>
       </section>
 
       <div className={`admin-module-stage ${slideDirection}`} key={`${activeModuleId}-${slideDirection}`}>
         {modules[activeModuleId]}
       </div>
+
+      {props.hasPendingChanges ? (
+        <div className="admin-save-float" role="status" aria-live="polite">
+          <div className="admin-save-float-copy">
+            <span className="mini-label">待保存修改</span>
+            <strong>{activeModule.title} 中有未保存内容</strong>
+            <p>完成调整后点击右侧按钮，即可统一保存到数据库。</p>
+          </div>
+          <button
+            className="primary-button admin-save-button"
+            disabled={props.saveAllPending || props.isBusy}
+            onClick={props.onSaveAll}
+            type="button"
+          >
+            {props.saveAllPending ? '保存中...' : '保存全部修改'}
+          </button>
+        </div>
+      ) : null}
 
       {editingMeal ? (
         <div className="confirm-overlay" role="dialog" aria-modal="true">

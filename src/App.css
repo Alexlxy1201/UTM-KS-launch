@@ -2535,3 +2535,283 @@ button:active,
     flex-basis: 100%;
   }
 }
+
+
+/* =========================
+   Admin mobile beautify v4
+   ========================= */
+
+.admin-console .admin-toolbar-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-console .admin-toolbar-stat {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(120, 88, 52, 0.08);
+  box-shadow: var(--shadow-xs);
+}
+
+.admin-console .admin-toolbar-stat span {
+  color: var(--ink-soft);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-console .admin-toolbar-stat strong {
+  color: var(--ink);
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.admin-console .admin-toolbar-stat p {
+  margin: 0;
+  color: var(--ink-muted);
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.admin-console .admin-toolbar-stat.active {
+  background:
+    radial-gradient(circle at top left, rgba(244, 162, 83, 0.14), transparent 30%),
+    linear-gradient(160deg, rgba(255, 251, 245, 0.92), rgba(255, 245, 232, 0.84));
+  border-color: rgba(215, 122, 47, 0.14);
+}
+
+.admin-console .admin-toolbar-stat.pending {
+  background:
+    radial-gradient(circle at top right, rgba(255, 183, 119, 0.14), transparent 30%),
+    linear-gradient(145deg, rgba(255, 253, 249, 0.9), rgba(255, 244, 228, 0.82));
+  border-color: rgba(215, 122, 47, 0.16);
+}
+
+.admin-console .admin-mobile-switch {
+  display: none;
+}
+
+.admin-console .admin-save-float {
+  right: 18px;
+  bottom: max(18px, env(safe-area-inset-bottom));
+}
+
+.admin-console .admin-save-float-copy strong {
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.admin-console .menu-editor-dialog {
+  max-height: min(86vh, 760px);
+  overflow: auto;
+}
+
+.admin-console .menu-editor-dialog::-webkit-scrollbar {
+  width: 8px;
+}
+
+.admin-console .menu-editor-dialog::-webkit-scrollbar-thumb {
+  background: rgba(120, 88, 52, 0.16);
+  border-radius: 999px;
+}
+
+@media (max-width: 760px) {
+  .admin-console {
+    gap: 14px;
+    padding-bottom: 108px;
+  }
+
+  .admin-console .admin-toolbar {
+    padding: 16px;
+    border-radius: 22px;
+  }
+
+  .admin-console .admin-toolbar-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .admin-console .admin-toolbar-title {
+    gap: 4px;
+  }
+
+  .admin-console .admin-toolbar-title h1 {
+    font-size: 1.22rem;
+  }
+
+  .admin-console .admin-toolbar-subtext {
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  .admin-console .admin-toolbar-actions {
+    width: 100%;
+    justify-content: stretch;
+    gap: 10px;
+  }
+
+  .admin-console .admin-toolbar-save,
+  .admin-console .admin-toolbar-signout {
+    flex: 1 1 0;
+    min-height: 42px;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+  }
+
+  .admin-console .admin-toolbar-summary {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .admin-console .admin-toolbar-stat {
+    padding: 13px 14px;
+    border-radius: 18px;
+  }
+
+  .admin-console .admin-mobile-switch {
+    display: grid;
+    gap: 10px;
+    padding: 13px 14px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(120, 88, 52, 0.08);
+    box-shadow: var(--shadow-xs);
+  }
+
+  .admin-console .admin-mobile-switch-copy {
+    gap: 6px;
+  }
+
+  .admin-console .admin-mobile-switch-copy strong {
+    font-size: 1rem;
+    line-height: 1.28;
+  }
+
+  .admin-console .admin-mobile-switch-copy p,
+  .admin-console .admin-mobile-switch-meta {
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .admin-console .admin-mobile-switch-field {
+    gap: 6px;
+  }
+
+  .admin-console .admin-toolbar-tabs {
+    display: none;
+  }
+
+  .admin-console .admin-wide-panel-actions {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .admin-console .admin-wide-panel-actions .badge {
+    width: auto;
+    max-width: 100%;
+  }
+
+  .admin-console .stats-filter-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .admin-console .stats-filter-field {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .admin-console .stats-editor-card,
+  .admin-console .summary-card,
+  .admin-console .metric-card,
+  .admin-console .today-order-card,
+  .admin-console .user-manage-card,
+  .admin-console .menu-admin-card,
+  .admin-console .payment-order-card,
+  .admin-console .payment-qr-card,
+  .admin-console .qr-upload-card,
+  .admin-console .summary-strip > div {
+    border-radius: 20px;
+  }
+
+  .admin-console .menu-editor-dialog {
+    width: min(100%, calc(100vw - 20px));
+    padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+    border-radius: 24px;
+  }
+
+  .admin-console .confirm-actions {
+    position: sticky;
+    bottom: 0;
+    padding-top: 12px;
+    background: linear-gradient(180deg, rgba(255, 250, 245, 0), rgba(255, 250, 245, 0.96) 36%);
+  }
+
+  .admin-console .admin-save-float {
+    left: 12px;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: auto;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .admin-console .admin-save-float-copy {
+    gap: 4px;
+  }
+
+  .admin-console .admin-save-button {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-console {
+    padding-bottom: 112px;
+  }
+
+  .admin-console .admin-toolbar {
+    padding: 14px;
+  }
+
+  .admin-console .admin-toolbar-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .admin-console .admin-toolbar-save,
+  .admin-console .admin-toolbar-signout {
+    width: 100%;
+  }
+
+  .admin-console .stats-filter-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-console .admin-wide-panel-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-console .admin-wide-panel-actions .badge {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .admin-console .menu-admin-badges span,
+  .admin-console .menu-admin-stats span {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
