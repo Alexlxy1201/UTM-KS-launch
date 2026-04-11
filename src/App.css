@@ -55,7 +55,7 @@ body {
 }
 
 .shell {
-  width: min(1320px, calc(100vw - 40px));
+  width: min(1180px, calc(100vw - 32px));
   margin: 0 auto;
   padding: 30px 0 72px;
 }
@@ -2107,7 +2107,7 @@ button:active,
 
 .admin-console .admin-toolbar,
 .admin-console .admin-module-panel {
-  width: min(1120px, 100%);
+  width: min(980px, 100%);
   margin: 0 auto;
 }
 
