@@ -2105,6 +2105,12 @@ button:active,
   gap: 18px;
 }
 
+.admin-console .admin-toolbar,
+.admin-console .admin-module-panel {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
 .admin-console .admin-toolbar {
   display: grid;
   gap: 12px;
@@ -2207,6 +2213,8 @@ button:active,
 
 .admin-console .admin-module-stage {
   min-height: 0;
+  display: grid;
+  gap: 18px;
 }
 
 .admin-console .admin-module-panel {
@@ -2452,6 +2460,11 @@ button:active,
 
   .admin-console .admin-module-panel {
     border-radius: 22px;
+  }
+
+  .admin-console .admin-toolbar,
+  .admin-console .admin-module-panel {
+    width: 100%;
   }
 
   .admin-console .menu-admin-header {
