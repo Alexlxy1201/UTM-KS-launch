@@ -349,7 +349,6 @@ export function AdminView(props: AdminViewProps) {
     customerName: order.customerName,
     meals: order.items.map((item) => item.mealName),
   }))
-  const activeModule = moduleCards.find((card) => card.id === activeModuleId) ?? moduleCards[0]
   const editingMeal = props.menu.find((meal) => meal.id === editingMealId) ?? null
   const statsRowsByDate = useMemo(
     () => [...props.dailyStats].sort((left, right) => right.date.localeCompare(left.date)),
@@ -449,28 +448,34 @@ export function AdminView(props: AdminViewProps) {
           </div>
           <span className="badge ok">{todayOrderDigest.length} 笔</span>
         </div>
-        {todayOrderDigest.length ? (
-          <div className="today-order-grid">
-            {todayOrderDigest.map((order) => (
-              <article key={order.id} className="today-order-card">
-                <div className="today-order-head">
-                  <strong>{order.customerName}</strong>
-                  <span>{order.time}</span>
-                </div>
-                <div className="today-order-meals">
-                  {order.meals.map((meal, index) => (
-                    <span key={`${order.id}-${meal}-${index}`}>{meal}</span>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <div className="empty-state">
-            <strong>今日暂无下单记录</strong>
-            <p>用户提交订单后，这里会自动展示今日下单摘要。</p>
-          </div>
-        )}
+        <div className="table-wrap compact-table mobile-scroll-table">
+          <table>
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>姓名</th>
+                <th>菜品</th>
+              </tr>
+            </thead>
+            <tbody>
+              {todayOrderDigest.length ? (
+                todayOrderDigest.map((order) => (
+                  <tr key={order.id}>
+                    <td>{order.time}</td>
+                    <td>{order.customerName}</td>
+                    <td>{order.meals.join('、')}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="table-empty" colSpan={3}>
+                    今日暂无订单
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </section>
     ),
     config: (
@@ -984,37 +989,12 @@ export function AdminView(props: AdminViewProps) {
           <div className="admin-toolbar-title">
             <span className="section-tag">UTM-KS Launch</span>
             <h1>管理后台</h1>
-            <p className="admin-toolbar-subtext">订单、支付、菜单和用户资料统一在这里处理。</p>
           </div>
           <div className="admin-toolbar-actions">
-            {props.hasPendingChanges ? (
-              <button
-                className="primary-button admin-toolbar-save"
-                disabled={props.saveAllPending || props.isBusy}
-                onClick={props.onSaveAll}
-                type="button"
-              >
-                {props.saveAllPending ? '保存中...' : '保存修改'}
-              </button>
-            ) : (
-              <span className="admin-toolbar-state clean">当前内容已同步</span>
-            )}
             <button className="secondary-button admin-toolbar-signout" onClick={props.onAdminSignOut} type="button">
               退出登录
             </button>
           </div>
-        </div>
-
-        <div className="admin-toolbar-status">
-          <span className="admin-toolbar-module-chip">
-            当前模块
-            <strong>{activeModule.title}</strong>
-          </span>
-          {props.adminSessionEmail ? <span className="admin-toolbar-account">{props.adminSessionEmail}</span> : null}
-          <span className={`admin-toolbar-state ${props.hasPendingChanges ? 'dirty' : 'clean'}`}>
-            {props.hasPendingChanges ? '检测到未保存修改' : '保存后会自动刷新'}
-          </span>
-          <span className="badge dark">{props.isSwitching ? '切换中...' : '管理模式'}</span>
         </div>
 
         <div aria-label="后台功能模块" className="admin-toolbar-tabs" role="tablist">
@@ -1028,10 +1008,19 @@ export function AdminView(props: AdminViewProps) {
               title={card.description}
               type="button"
             >
-              <span>{card.title}</span>
-              <small>{card.meta}</small>
+              {card.title}
             </button>
           ))}
+          {props.hasPendingChanges ? (
+            <button
+              className="primary-button admin-toolbar-save"
+              disabled={props.saveAllPending || props.isBusy}
+              onClick={props.onSaveAll}
+              type="button"
+            >
+              {props.saveAllPending ? '保存中...' : '保存修改'}
+            </button>
+          ) : null}
         </div>
       </section>
 

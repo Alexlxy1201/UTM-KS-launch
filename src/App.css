@@ -2107,36 +2107,31 @@ button:active,
 
 .admin-console .admin-toolbar {
   display: grid;
-  gap: 14px;
-  padding: 24px 26px;
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at top right, rgba(255, 188, 133, 0.18), transparent 24%),
-    radial-gradient(circle at bottom left, rgba(36, 116, 103, 0.12), transparent 24%),
-    linear-gradient(145deg, rgba(255, 252, 248, 0.92), rgba(255, 245, 232, 0.84));
-  border: 1px solid rgba(186, 132, 81, 0.12);
-  box-shadow:
-    0 18px 42px rgba(88, 61, 31, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  gap: 12px;
+  padding: 20px 22px;
+  border-radius: 24px;
+  background: rgba(255, 252, 248, 0.9);
+  border: 1px solid rgba(186, 132, 81, 0.1);
+  box-shadow: 0 14px 30px rgba(88, 61, 31, 0.06);
 }
 
 .admin-console .admin-toolbar-head {
   display: flex;
   justify-content: space-between;
-  gap: 18px;
-  align-items: flex-start;
+  gap: 12px;
+  align-items: center;
 }
 
 .admin-console .admin-toolbar-title {
   min-width: 0;
   display: grid;
-  gap: 8px;
+  gap: 4px;
 }
 
 .admin-console .admin-toolbar-title h1 {
   margin: 0;
-  font-size: clamp(1.8rem, 3vw, 2.45rem);
-  line-height: 1;
+  font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+  line-height: 1.05;
   letter-spacing: -0.04em;
 }
 
@@ -2150,85 +2145,44 @@ button:active,
 .admin-console .admin-toolbar-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 8px;
   align-items: center;
-}
-
-.admin-console .admin-toolbar-status {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.admin-console .admin-toolbar-account,
-.admin-console .admin-toolbar-module-chip,
-.admin-console .admin-toolbar-state {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 40px;
-  padding: 10px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(120, 88, 52, 0.1);
-  background: rgba(255, 255, 255, 0.7);
-  box-shadow: var(--shadow-xs);
-  color: var(--ink-muted);
-  font-size: 0.88rem;
-  line-height: 1;
-}
-
-.admin-console .admin-toolbar-module-chip strong {
-  color: var(--ink);
-  font-size: 0.92rem;
-}
-
-.admin-console .admin-toolbar-account {
-  max-width: 100%;
-  overflow-wrap: anywhere;
-}
-
-.admin-console .admin-toolbar-state.clean {
-  color: #1c6458;
-  background: rgba(230, 248, 242, 0.92);
-}
-
-.admin-console .admin-toolbar-state.dirty {
-  color: #a15523;
-  background: rgba(255, 240, 225, 0.92);
 }
 
 .admin-console .admin-toolbar-tabs {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
   gap: 10px;
+  padding-bottom: 2px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.admin-console .admin-toolbar-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .admin-console .admin-toolbar-tab {
-  min-height: 60px;
-  display: grid;
-  gap: 3px;
-  justify-items: start;
-  align-content: center;
-  padding: 12px 14px;
-  border-radius: 18px;
-  text-align: left;
+  flex: 0 0 auto;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  text-align: center;
   border: 1px solid rgba(120, 88, 52, 0.1);
   background: rgba(255, 255, 255, 0.76);
   box-shadow: var(--shadow-xs);
-}
-
-.admin-console .admin-toolbar-tab span {
-  font-size: 0.9rem;
-  font-weight: 800;
-  color: var(--ink);
+  color: var(--ink-muted);
+  font-size: 0.84rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .admin-console .admin-toolbar-tab small {
-  display: block;
-  color: var(--ink-soft);
-  font-size: 0.76rem;
+  display: none;
 }
 
 .admin-console .admin-toolbar-tab.active {
@@ -2239,16 +2193,16 @@ button:active,
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.admin-console .admin-toolbar-tab.active span,
-.admin-console .admin-toolbar-tab.active small {
+.admin-console .admin-toolbar-tab.active {
   color: #fff8f0;
 }
 
 .admin-console .admin-toolbar-save,
 .admin-console .admin-toolbar-signout {
-  min-height: 42px;
-  padding: 10px 16px;
+  min-height: 36px;
+  padding: 8px 12px;
   border-radius: 999px;
+  font-size: 0.82rem;
 }
 
 .admin-console .admin-module-stage {
@@ -2443,75 +2397,37 @@ button:active,
   }
 
   .admin-console .admin-toolbar {
-    gap: 12px;
-    padding: 18px 16px;
+    gap: 10px;
+    padding: 16px 16px;
     border-radius: 22px;
   }
 
   .admin-console .admin-toolbar-head {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 10px;
   }
 
   .admin-console .admin-toolbar-title {
-    gap: 6px;
+    gap: 2px;
   }
 
   .admin-console .admin-toolbar-title h1 {
-    font-size: 1.55rem;
-  }
-
-  .admin-console .admin-toolbar-subtext {
-    font-size: 0.92rem;
-    line-height: 1.5;
+    font-size: 1.28rem;
   }
 
   .admin-console .admin-toolbar-actions {
-    width: 100%;
-    justify-content: stretch;
-  }
-
-  .admin-console .admin-toolbar-actions > * {
-    flex: 1 1 calc(50% - 5px);
-    justify-content: center;
-  }
-
-  .admin-console .admin-toolbar-status {
-    gap: 8px;
-  }
-
-  .admin-console .admin-toolbar-account,
-  .admin-console .admin-toolbar-module-chip,
-  .admin-console .admin-toolbar-state {
-    padding: 9px 12px;
-    min-height: 38px;
-    font-size: 0.82rem;
-  }
-
-  .admin-console .admin-toolbar-module-chip strong {
-    font-size: 0.86rem;
+    margin-left: auto;
   }
 
   .admin-console .admin-toolbar-tabs {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
     gap: 8px;
   }
 
   .admin-console .admin-toolbar-tab {
-    min-height: 52px;
-    padding: 10px 8px;
-    border-radius: 16px;
-    justify-items: center;
-    text-align: center;
-  }
-
-  .admin-console .admin-toolbar-tab span {
-    font-size: 0.8rem;
-  }
-
-  .admin-console .admin-toolbar-tab small {
-    display: none;
+    min-height: 34px;
+    padding: 7px 10px;
+    font-size: 0.78rem;
   }
 
   .admin-console .admin-module-panel {
@@ -2567,16 +2483,7 @@ button:active,
 
 @media (max-width: 520px) {
   .admin-console .admin-toolbar-tabs {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .admin-console .admin-toolbar-actions > * {
-    flex-basis: 100%;
-  }
-
-  .admin-console .admin-toolbar-status {
-    display: grid;
-    grid-template-columns: 1fr;
+    gap: 6px;
   }
 
   .admin-console .summary-board {
