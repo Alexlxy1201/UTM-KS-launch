@@ -441,7 +441,7 @@ export function AdminView(props: AdminViewProps) {
     overview: <AdminOverview todayOverview={props.todayOverview} />,
     'today-orders': (
       <section className="panel admin-module-panel">
-        <div className="panel-head">
+        <div className="panel-head admin-wide-panel-head">
           <div>
             <span className="section-tag">今日订单</span>
             <h2>今日订单</h2>
@@ -789,11 +789,14 @@ export function AdminView(props: AdminViewProps) {
     ),
     payments: (
       <section className="panel admin-module-panel">
-        <div className="panel-head">
+        <div className="panel-head admin-wide-panel-head">
           <div>
             <span className="section-tag">付款记录</span>
             <h2>支付截图登记</h2>
-            <p className="panel-subtext">支付截图仅保留 7 天，超期后系统将自动清理。</p>
+          </div>
+          <div className="admin-wide-panel-actions">
+            <span className="badge accent">共 {props.payments.length} 条</span>
+            <span className="badge warn">截图保留 7 天</span>
           </div>
         </div>
         <div className="table-wrap compact-table mobile-scroll-table">
@@ -853,12 +856,16 @@ export function AdminView(props: AdminViewProps) {
     ),
     stats: (
       <section className="panel admin-module-panel">
-        <div className="panel-head">
+        <div className="panel-head admin-wide-panel-head">
           <div>
             <span className="section-tag">每日统计</span>
             <h2>经营统计</h2>
           </div>
-          <div className="stats-filter-bar">
+          <div className="admin-wide-panel-actions">
+            <span className="badge accent">共 {statsSummary.rows.length} 天</span>
+          </div>
+        </div>
+        <div className="stats-filter-bar admin-wide-toolbar">
             <label className="stats-filter-field">
               统计日期
               <input
@@ -878,7 +885,6 @@ export function AdminView(props: AdminViewProps) {
                 <option value="month">近 30 天</option>
               </select>
             </label>
-          </div>
         </div>
 
         <div className="metric-grid stats-summary-grid">
