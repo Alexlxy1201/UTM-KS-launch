@@ -39,6 +39,20 @@
   letter-spacing: 0.16em;
 }
 
+.landing-brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.landing-brand-logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(183, 37, 37, 0.12);
+}
+
 .landing-admin-button {
   min-height: 42px;
   padding: 0 18px;

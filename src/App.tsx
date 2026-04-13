@@ -40,6 +40,7 @@ import type {
   AppConfig,
   AppState,
   DailyStatsRow,
+  DeliveryLocation,
   ManagedUserProfile,
   MealItem,
   NavigationView,
@@ -183,6 +184,7 @@ function App() {
   const [appState, setAppState] = useState<AppState>(() => createEmptyState())
   const [activeView, setActiveView] = useState<NavigationView>(() => getStoredActiveView())
   const [selectedMealIds, setSelectedMealIds] = useState<string[]>([])
+  const [selectedDeliveryLocation, setSelectedDeliveryLocation] = useState<DeliveryLocation>('MUET 送餐点')
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null)
   const [paymentChannel, setPaymentChannel] = useState<PaymentChannel>('\u652f\u4ed8\u5b9d')
   const [paymentFileName, setPaymentFileName] = useState('')
@@ -619,6 +621,15 @@ function App() {
       return
     }
 
+    if (!selectedDeliveryLocation) {
+      setNotice({
+        tone: 'warning',
+        title: '请选择配送地点',
+        description: '请先选择本次订单的配送地点，再提交订单。',
+      })
+      return
+    }
+
     if (isPastDeadline(appState.config.orderDeadlineHour)) {
       setNotice({
         tone: 'warning',
@@ -630,7 +641,10 @@ function App() {
 
     try {
       setActionPending(true)
-      const result = await createLiveOrder(selectedMeals.map((meal) => meal.id))
+      const result = await createLiveOrder(
+        selectedMeals.map((meal) => meal.id),
+        selectedDeliveryLocation,
+      )
       setSelectedOrderId(result.order_id)
       setSelectedMealIds([])
       setPaymentFileName('')
@@ -1497,6 +1511,7 @@ function App() {
           isOrdersLoading={ordersLoading}
           myOrders={userOrders}
           onCreateOrder={() => void handleCreateOrder()}
+          onDeliveryLocationChange={setSelectedDeliveryLocation}
           onDownloadPaymentQr={(channel, qrUrl) => void handleDownloadPaymentQr(channel, qrUrl)}
           onGoHome={() => void openPublicView('home')}
           onGoUserCenter={() => switchView('user-center')}
@@ -1522,6 +1537,7 @@ function App() {
           paymentFileName={paymentFileName}
           paymentNote={paymentNote}
           qrNote={appState.config.qrNote}
+          selectedDeliveryLocation={selectedDeliveryLocation}
           selectedMealIds={selectedMealIds}
           selectedOrder={selectedOrder}
           wechatQrUrl={appState.config.wechatQrUrl}

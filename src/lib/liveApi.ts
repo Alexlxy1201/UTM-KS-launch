@@ -2,6 +2,7 @@
 import type {
   AppConfig,
   DailyStatsRow,
+  DeliveryLocation,
   ManagedUserProfile,
   MealItem,
   OrderRecord,
@@ -46,6 +47,7 @@ type DailyMenuRow = {
 type OrderItemRow = {
   meal_id: string | null
   meal_name: string
+  meal_category: string | null
   unit_price: number
   meal_cost: number
 }
@@ -54,6 +56,7 @@ type OrderRow = {
   id: string
   order_no: string
   customer_name: string | null
+  delivery_location: string | null
   ordered_at: string
   order_date: string
   payment_channel: PaymentChannel | null
@@ -168,6 +171,7 @@ function mapOrderRow(row: OrderRow): OrderRecord {
     id: row.id,
     orderNo: row.order_no,
     customerName: row.customer_name ?? '未命名用户',
+    deliveryLocation: row.delivery_location ?? 'MUET 送餐点',
     createdAt: row.ordered_at,
     orderDate: row.order_date,
     paymentStatus: row.payment_status,
@@ -178,6 +182,7 @@ function mapOrderRow(row: OrderRow): OrderRecord {
     items: (row.order_items ?? []).map((item) => ({
       mealId: item.meal_id ?? '',
       mealName: item.meal_name,
+      mealCategory: item.meal_category ?? '未分类',
       unitPrice: Number(item.unit_price),
       cost: Number(item.meal_cost),
     })),
@@ -489,8 +494,8 @@ export async function fetchMyOrders() {
   const client = requireSupabase()
   const { data, error } = await client
     .from('orders')
-    .select(
-      'id, order_no, customer_name, ordered_at, order_date, payment_channel, payment_status, payment_proof_path, payment_note, callback_time, order_items(meal_id, meal_name, unit_price, meal_cost)',
+      .select(
+      'id, order_no, customer_name, delivery_location, ordered_at, order_date, payment_channel, payment_status, payment_proof_path, payment_note, callback_time, order_items(meal_id, meal_name, meal_category, unit_price, meal_cost)',
     )
     .eq('order_date', TODAY())
     .order('ordered_at', { ascending: false })
@@ -499,15 +504,16 @@ export async function fetchMyOrders() {
   return ((data ?? []) as OrderRow[]).map(mapOrderRow)
 }
 
-export async function createLiveOrder(mealIds: string[]) {
+export async function createLiveOrder(mealIds: string[], deliveryLocation: DeliveryLocation) {
   const client = requireSupabase()
   const { data, error } = await client.rpc('create_order_with_items', {
     p_meal_ids: mealIds,
+    p_delivery_location: deliveryLocation,
   })
 
   if (error) throw error
 
-  return data as { order_id: string; order_no: string; customer_name: string }
+  return data as { order_id: string; order_no: string; customer_name: string; delivery_location: string }
 }
 
 export async function uploadPaymentProof(args: {
@@ -672,7 +678,7 @@ export async function fetchAdminDashboard() {
     client
       .from('orders')
       .select(
-        'id, order_no, customer_name, ordered_at, order_date, payment_channel, payment_status, payment_proof_path, payment_note, callback_time, order_items(meal_id, meal_name, unit_price, meal_cost)',
+        'id, order_no, customer_name, delivery_location, ordered_at, order_date, payment_channel, payment_status, payment_proof_path, payment_note, callback_time, order_items(meal_id, meal_name, meal_category, unit_price, meal_cost)',
       )
       .eq('order_date', today)
       .order('ordered_at', { ascending: false }),

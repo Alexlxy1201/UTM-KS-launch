@@ -1,8 +1,12 @@
 export type NavigationView = 'home' | 'register' | 'admin-login' | 'user' | 'user-center' | 'admin'
 
-export type OrderStatus = '\u672a\u4ed8' | '\u5f85\u6838\u9a8c' | '\u5df2\u4ed8'
+export type OrderStatus = '未付' | '待核验' | '已付'
 
-export type PaymentChannel = '\u652f\u4ed8\u5b9d' | '\u5fae\u4fe1'
+export type PaymentChannel = '支付宝' | '微信'
+
+export const DELIVERY_LOCATIONS = ['MUET 送餐点', '计算机学院', 'UTM SPACE', 'V01'] as const
+
+export type DeliveryLocation = (typeof DELIVERY_LOCATIONS)[number]
 
 export type UserProfile = {
   userId: string
@@ -31,6 +35,7 @@ export type MealItem = {
 export type OrderItem = {
   mealId: string
   mealName: string
+  mealCategory: string
   unitPrice: number
   cost: number
 }
@@ -39,6 +44,7 @@ export type OrderRecord = {
   id: string
   orderNo: string
   customerName: string
+  deliveryLocation: string
   createdAt: string
   orderDate: string
   paymentStatus: OrderStatus

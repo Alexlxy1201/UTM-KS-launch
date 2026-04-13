@@ -1104,3 +1104,147 @@ on conflict (key) do update
 set
   is_public = excluded.is_public,
   updated_at = now();
+
+alter table public.orders
+  add column if not exists delivery_location text not null default 'MUET 送餐点';
+
+alter table public.order_items
+  add column if not exists meal_category text not null default '未分类';
+
+update public.orders
+set delivery_location = 'MUET 送餐点'
+where delivery_location is null or trim(delivery_location) = '';
+
+update public.order_items oi
+set meal_category = coalesce(nullif(trim(mm.category), ''), '未分类')
+from public.menu_master mm
+where oi.meal_id = mm.id
+  and (oi.meal_category is null or trim(oi.meal_category) = '' or oi.meal_category = '未分类');
+
+create or replace function public.create_order_with_items(
+  p_meal_ids uuid[],
+  p_delivery_location text
+)
+returns json
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user_id uuid := auth.uid();
+  v_profile public.user_profiles%rowtype;
+  v_order_id uuid;
+  v_order_no text;
+  v_inserted_count integer;
+  v_deadline_hour integer := 13;
+  v_local_hour integer;
+  v_order_date date := (timezone('Asia/Shanghai', now()))::date;
+  v_delivery_location text := trim(coalesce(p_delivery_location, ''));
+begin
+  if v_user_id is null then
+    raise exception '请先登录后再下单';
+  end if;
+
+  if coalesce(array_length(p_meal_ids, 1), 0) = 0 then
+    raise exception '请至少选择一份餐点';
+  end if;
+
+  if v_delivery_location = '' then
+    raise exception '请选择配送地点';
+  end if;
+
+  if v_delivery_location not in ('MUET 送餐点', '计算机学院', 'UTM SPACE', 'V01') then
+    raise exception '配送地点不在系统允许范围内';
+  end if;
+
+  select *
+  into v_profile
+  from public.user_profiles
+  where user_id = v_user_id
+  limit 1;
+
+  if v_profile.user_id is null then
+    raise exception '未找到用户资料，请重新登录后再试';
+  end if;
+
+  select value::integer
+  into v_deadline_hour
+  from public.app_config
+  where key = 'ORDER_DEADLINE_HOUR'
+  limit 1;
+
+  v_deadline_hour := coalesce(v_deadline_hour, 13);
+  v_local_hour := extract(hour from timezone('Asia/Shanghai', now()));
+
+  if v_local_hour >= v_deadline_hour then
+    raise exception '已过今日截单时间';
+  end if;
+
+  v_order_no := public.generate_order_no();
+
+  insert into public.orders (
+    user_id,
+    order_no,
+    customer_name,
+    delivery_location,
+    order_date
+  )
+  values (
+    v_user_id,
+    v_order_no,
+    v_profile.full_name,
+    v_delivery_location,
+    v_order_date
+  )
+  returning id into v_order_id;
+
+  insert into public.order_items (
+    order_id,
+    meal_id,
+    meal_name,
+    meal_category,
+    unit_price,
+    meal_cost
+  )
+  select
+    v_order_id,
+    mm.id,
+    mm.name,
+    coalesce(nullif(trim(mm.category), ''), '未分类'),
+    coalesce(dm.today_price, mm.base_price),
+    mm.cost
+  from public.menu_master mm
+  left join public.daily_menu dm
+    on dm.meal_id = mm.id
+   and dm.menu_date = v_order_date
+  where mm.id = any(p_meal_ids)
+    and coalesce(dm.is_available, mm.default_enabled) = true;
+
+  get diagnostics v_inserted_count = row_count;
+
+  if v_inserted_count = 0 then
+    delete from public.orders where id = v_order_id;
+    raise exception '今日菜单中未找到可用餐点';
+  end if;
+
+  return json_build_object(
+    'order_id', v_order_id,
+    'order_no', v_order_no,
+    'customer_name', v_profile.full_name,
+    'delivery_location', v_delivery_location
+  );
+end;
+$$;
+
+create or replace function public.create_order_with_items(p_meal_ids uuid[])
+returns json
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  return public.create_order_with_items(p_meal_ids, 'MUET 送餐点');
+end;
+$$;
+
+grant execute on function public.create_order_with_items(uuid[], text) to authenticated;

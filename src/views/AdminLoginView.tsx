@@ -13,9 +13,9 @@ export function AdminLoginView(props: AdminLoginViewProps) {
     <main className="auth-stage">
       <section className="auth-card admin-auth-card">
         <div className="auth-brand">
-          <span className="eyebrow">UTM-KS Launch</span>
+          <span className="eyebrow">FUMANJIA ISS</span>
           <h1>管理员登录</h1>
-          <p>登录后进入独立的管理后台，处理订单、菜单、用户与支付配置。</p>
+          <p>登录后进入管理后台，处理订单、菜单、用户、收款码与统计配置。</p>
         </div>
 
         <div className="field-row">

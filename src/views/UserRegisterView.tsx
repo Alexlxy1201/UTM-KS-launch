@@ -19,7 +19,7 @@ export function UserRegisterView(props: UserRegisterViewProps) {
     <main className="auth-stage">
       <section className="auth-card register-card">
         <div className="auth-brand">
-          <span className="eyebrow">UTM-KS Launch</span>
+          <span className="eyebrow">FUMANJIA ISS</span>
           <h1>用户注册</h1>
           <p>请完整填写账户信息。注册完成后，可使用登录邮箱和密码进入系统。</p>
         </div>

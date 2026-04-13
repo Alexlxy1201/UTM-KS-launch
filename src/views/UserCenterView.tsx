@@ -35,7 +35,9 @@ export function UserCenterView(props: UserCenterViewProps) {
           <div>
             <span className="section-tag">用户中心</span>
             <h2>个人信息与账户设置</h2>
-            <p className="panel-subtext">你可以在这里维护用户名、真实姓名、登录邮箱、联系电话以及登录密码。</p>
+            <p className="panel-subtext">
+              你可以在这里维护用户名、真实姓名、登录邮箱、联系电话以及登录密码。
+            </p>
           </div>
           <button className="secondary-button" onClick={props.onBackToUserPage} type="button">
             返回订餐页面
@@ -85,7 +87,7 @@ export function UserCenterView(props: UserCenterViewProps) {
             <input
               autoComplete="new-password"
               onChange={(event) => props.onPasswordChange(event.target.value)}
-              placeholder="如无需修改密码，可留空"
+              placeholder="如无需要修改密码，可留空"
               type="password"
               value={props.password}
             />

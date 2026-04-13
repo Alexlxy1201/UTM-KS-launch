@@ -73,18 +73,17 @@ export function buildTodayOverview(appState: AppState, dateKey: string): TodayOv
   const totalCost = paidOrders.reduce((sum, order) => sum + calculateOrderCost(order), 0)
   const summaryMap = new Map<string, { quantity: number; sold: number }>()
 
-  paidOrders.forEach((order) => {
-    order.items.forEach((item) => {
+  for (const order of paidOrders) {
+    for (const item of order.items) {
       const existing = summaryMap.get(item.mealName)
       if (existing) {
         existing.quantity += 1
         existing.sold += item.unitPrice
-        return
+      } else {
+        summaryMap.set(item.mealName, { quantity: 1, sold: item.unitPrice })
       }
-
-      summaryMap.set(item.mealName, { quantity: 1, sold: item.unitPrice })
-    })
-  })
+    }
+  }
 
   return {
     totalSold,

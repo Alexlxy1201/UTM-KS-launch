@@ -1,4 +1,5 @@
 import type { FormEvent } from 'react'
+import brandLogo from '../assets/fumanjia-logo.jpeg'
 import './HomeView.css'
 
 type HomeViewProps = {
@@ -28,7 +29,10 @@ export function HomeView(props: HomeViewProps) {
 
       <section className="landing-shell">
         <div className="landing-toolbar">
-          <span className="landing-brand">UTM-KS LAUNCH</span>
+          <div className="landing-brand-lockup">
+            <img alt="福满家 FUMANJIA ISS" className="landing-brand-logo" src={brandLogo} />
+            <span className="landing-brand">FUMANJIA ISS</span>
+          </div>
           <button className="landing-admin-button" onClick={props.onGoAdminLogin} type="button">
             管理员登录
           </button>
@@ -38,7 +42,7 @@ export function HomeView(props: HomeViewProps) {
           <div className="landing-card-head">
             <span className="landing-badge">用户入口</span>
             <h1>用户登录</h1>
-            <p>登录后即可进入订餐页面，完成下单、上传付款凭证，并查看当日订单记录。</p>
+            <p>登录后即可进入订餐页面，提交订单、上传付款凭证，并查看当日订单记录。</p>
           </div>
 
           <form className="landing-form" onSubmit={handleSubmit}>

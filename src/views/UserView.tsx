@@ -7,7 +7,8 @@ import {
   getStatusTone,
   isPastDeadline,
 } from '../lib/orderUtils'
-import type { MealItem, OrderRecord, PaymentChannel, UserProfile } from '../types'
+import { DELIVERY_LOCATIONS } from '../types'
+import type { DeliveryLocation, MealItem, OrderRecord, PaymentChannel, UserProfile } from '../types'
 
 type UserViewProps = {
   orderDeadlineHour: number
@@ -20,6 +21,7 @@ type UserViewProps = {
   currentSessionEmail: string | null
   availableMeals: MealItem[]
   selectedMealIds: string[]
+  selectedDeliveryLocation: DeliveryLocation
   selectedOrder: OrderRecord | null
   myOrders: OrderRecord[]
   draftTotal: number
@@ -33,6 +35,7 @@ type UserViewProps = {
   onGoUserCenter: () => void
   onUserSignOut: () => void
   onMealToggle: (mealId: string) => void
+  onDeliveryLocationChange: (location: DeliveryLocation) => void
   onCreateOrder: () => void
   onPaymentChannelChange: (channel: PaymentChannel) => void
   onProofPick: (event: ChangeEvent<HTMLInputElement>) => void
@@ -51,12 +54,12 @@ const paymentChannelOptions: Array<{
   {
     value: '支付宝',
     title: '支付宝支付',
-    description: '选择后将显示支付宝收款码，完成付款后请上传付款凭证。',
+    description: '选择后将显示支付宝收款码，支付完成后请上传付款凭证。',
   },
   {
     value: '微信',
     title: '微信支付',
-    description: '选择后将显示微信收款码，完成付款后请上传付款凭证。',
+    description: '选择后将显示微信收款码，支付完成后请上传付款凭证。',
   },
 ]
 
@@ -137,8 +140,8 @@ export function UserView(props: UserViewProps) {
             <strong>{props.availableMeals.length} 款</strong>
           </div>
           <div>
-            <span>参考汇率</span>
-            <strong>1 RM ≈ {props.exchangeRate.toFixed(4)} CNY</strong>
+            <span>配送地点</span>
+            <strong>{props.selectedDeliveryLocation}</strong>
           </div>
           <div>
             <span>预计应付</span>
@@ -146,8 +149,32 @@ export function UserView(props: UserViewProps) {
           </div>
         </div>
 
+        <section className="location-picker-card">
+          <div className="inline-head">
+            <span className="section-tag">配送地点</span>
+            <h3>请选择本次配送地点</h3>
+          </div>
+          <div className="delivery-location-grid">
+            {DELIVERY_LOCATIONS.map((location) => (
+              <button
+                key={location}
+                className={
+                  props.selectedDeliveryLocation === location
+                    ? 'payment-method active delivery-location-option'
+                    : 'payment-method delivery-location-option'
+                }
+                onClick={() => props.onDeliveryLocationChange(location)}
+                type="button"
+              >
+                <strong>{location}</strong>
+                <p>提交订单后将按该地点统计并安排配送。</p>
+              </button>
+            ))}
+          </div>
+        </section>
+
         <div className="meal-grid">
-          {props.availableMeals.map((meal: MealItem) => {
+          {props.availableMeals.map((meal) => {
             const active = props.selectedMealIds.includes(meal.id)
             return (
               <button
@@ -195,6 +222,7 @@ export function UserView(props: UserViewProps) {
               <div>
                 <span className="order-code">订单号 {props.selectedOrder.orderNo}</span>
                 <strong>{props.selectedOrder.customerName}</strong>
+                <p>配送地点：{props.selectedOrder.deliveryLocation}</p>
                 <p>{getMealSummaryText(props.selectedOrder)}</p>
               </div>
               <div className="payment-amounts">
@@ -224,7 +252,11 @@ export function UserView(props: UserViewProps) {
                 <button
                   className="secondary-button"
                   disabled={props.openingProofPath === props.selectedOrder.paymentProofName}
-                  onClick={() => props.onViewOrderProof(props.selectedOrder!)}
+                  onClick={() => {
+                    if (props.selectedOrder) {
+                      props.onViewOrderProof(props.selectedOrder)
+                    }
+                  }}
                   type="button"
                 >
                   {props.openingProofPath === props.selectedOrder.paymentProofName
@@ -238,7 +270,9 @@ export function UserView(props: UserViewProps) {
               {paymentChannelOptions.map((option) => (
                 <button
                   key={option.value}
-                  className={props.paymentChannel === option.value ? 'payment-method active' : 'payment-method'}
+                  className={
+                    props.paymentChannel === option.value ? 'payment-method active' : 'payment-method'
+                  }
                   onClick={() => props.onPaymentChannelChange(option.value)}
                   type="button"
                 >
@@ -331,18 +365,18 @@ export function UserView(props: UserViewProps) {
         ) : null}
 
         <div className="my-order-summary">
-          <div className="metric-card">
-            <span>今日订单数</span>
-            <strong>{props.myOrders.length}</strong>
-          </div>
-          <div className="metric-card">
-            <span>今日订单金额</span>
-            <strong>{formatCurrency(totalOrderAmount, 'RM')}</strong>
-          </div>
-          <div className="metric-card">
-            <span>待支付订单</span>
+          <article className="metric-card">
+            <span>今日订单</span>
+            <strong>{props.myOrders.length} 笔</strong>
+          </article>
+          <article className="metric-card">
+            <span>待处理订单</span>
             <strong>{pendingOrderCount} 笔</strong>
-          </div>
+          </article>
+          <article className="metric-card">
+            <span>金额合计</span>
+            <strong>{formatCurrency(totalOrderAmount, 'RM')}</strong>
+          </article>
         </div>
 
         <div className="table-wrap responsive-card-wrap">
@@ -351,6 +385,7 @@ export function UserView(props: UserViewProps) {
               <tr>
                 <th>时间</th>
                 <th>订单号</th>
+                <th>配送地点</th>
                 <th>餐点</th>
                 <th>金额</th>
                 <th>状态</th>
@@ -359,10 +394,11 @@ export function UserView(props: UserViewProps) {
             </thead>
             <tbody>
               {props.myOrders.length ? (
-                props.myOrders.map((order: OrderRecord) => (
+                props.myOrders.map((order) => (
                   <tr key={order.id}>
                     <td data-label="时间">{formatClock(order.createdAt)}</td>
                     <td data-label="订单号">{order.orderNo}</td>
+                    <td data-label="配送地点">{order.deliveryLocation}</td>
                     <td data-label="餐点">{getMealSummaryText(order)}</td>
                     <td data-label="金额">{formatCurrency(calculateOrderTotal(order), 'RM')}</td>
                     <td data-label="状态">
@@ -374,28 +410,29 @@ export function UserView(props: UserViewProps) {
                       <div className="table-action-stack">
                         <button
                           className="table-action"
-                          disabled={props.openingProofPath === order.paymentProofName}
-                          onClick={() =>
-                            order.paymentStatus === '已付'
-                              ? props.onViewOrderProof(order)
-                              : props.onUseOrderForPayment(order.id)
-                          }
+                          onClick={() => props.onUseOrderForPayment(order.id)}
                           type="button"
                         >
-                          {order.paymentStatus === '已付'
-                            ? props.openingProofPath === order.paymentProofName
-                              ? '打开中...'
-                              : '查看订单'
-                            : '继续付款'}
+                          查看订单
                         </button>
+                        {order.paymentProofName ? (
+                          <button
+                            className="table-action ghost"
+                            disabled={props.openingProofPath === order.paymentProofName}
+                            onClick={() => props.onViewOrderProof(order)}
+                            type="button"
+                          >
+                            {props.openingProofPath === order.paymentProofName ? '打开中...' : '查看截图'}
+                          </button>
+                        ) : null}
                       </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td className="table-empty" colSpan={6}>
-                    暂无今日订单
+                  <td className="table-empty" colSpan={7}>
+                    今日暂无订单
                   </td>
                 </tr>
               )}
