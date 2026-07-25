@@ -1,82 +1,71 @@
-# UTM-KS Launch
+# UTM-KS Ordering Platform
 
-一个面向正式部署的中文订餐系统，包含用户端和管理员端，覆盖用户注册登录、选餐下单、静态码支付、付款截图上传、管理员订单管理和每日统计。
+一个面向校园与小型餐饮场景的全栈订餐系统，覆盖用户注册、菜单浏览、选餐下单、二维码支付、付款凭证上传、订单履约和经营数据统计。前端使用 React + TypeScript，Supabase 提供认证、PostgreSQL、Storage、Realtime 与权限控制。
 
-这个仓库现在默认按“上线版”组织：
+> React 19 · TypeScript · Supabase · PostgreSQL · Vite
 
-- 不再依赖浏览器本地假数据作为回退
-- 没有配置 Supabase 时，页面只提示缺少配置，不会继续跑测试流程
-- 用户通过前台自行注册账号
-- 管理员只能在后台内部创建并授权
+## Highlights
 
-## 运行方式
+- 用户与管理员双角色流程，管理员通过内部白名单授权。
+- 菜单、价格、配送点、订单、付款凭证和每日经营统计统一管理。
+- 支付宝/微信静态码支付与付款截图上传。
+- Supabase Auth、RLS、RPC 和 Storage policy 组成后端安全边界。
+- 支持订单与登录状态实时同步、过期付款凭证清理和汇率更新。
+- 完整的生产构建、环境变量模板与部署说明。
+
+## Architecture
+
+```mermaid
+flowchart LR
+    Customer["Customer UI"] --> React["React Application"]
+    Admin["Admin Console"] --> React
+    React --> Auth["Supabase Auth"]
+    React --> DB["PostgreSQL + RLS"]
+    React --> Storage["Payment Proof Storage"]
+    DB --> Stats["Daily Sales / Cost / Profit"]
+    DB --> Realtime["Realtime Updates"]
+```
+
+## Core Modules
+
+- 顾客端：注册、登录、今日菜单、配送点、下单、支付和订单查询。
+- 管理端：订单台、付款核验、菜单维护、用户管理、系统配置和日报。
+- 数据层：用户资料、管理员白名单、菜单、订单、订单行、支付和每日统计。
+- 安全：RLS、服务端函数、签名下载链接和环境变量隔离。
+
+## Local Development
 
 ```bash
 npm install
+cp .env.example .env
 npm run dev
 ```
 
-构建生产包：
-
-```bash
-npm run build
-```
-
-## 必要环境变量
-
-复制 [.env.example](/C:/project/UTM&KS launch/.env.example) 为 `.env`，然后填写：
+在 `.env` 中配置：
 
 ```env
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-## 初始化正式后端
+将 [`supabase/schema.sql`](supabase/schema.sql) 应用到自己的 Supabase 项目后再创建内部管理员账号。不要在公开环境中使用示例邮箱或弱密码。
 
-1. 在 Supabase SQL Editor 执行 [schema.sql](/C:/project/UTM&KS launch/supabase/schema.sql)
-2. 在 Authentication 里内部创建管理员账号
-3. 推荐管理员账号：
-   - 邮箱：`admin@example.com`
-   - 密码：`abc123`
-4. `schema.sql` 会自动预置 `admin@example.com` 到 `admin_users`
-5. 普通用户通过前台自行注册，资料会自动写入 `user_profiles`
+## Validation
 
-如果你要追加新的内部管理员，可以执行：
-
-```sql
-insert into public.admin_users (email)
-values ('manager@example.com')
-on conflict (email) do nothing;
+```bash
+npm run lint
+npm run build
 ```
 
-然后再去 Authentication 创建同邮箱账号。
+## Repository Structure
 
-## 当前系统能力
+```text
+src/components/   通用 UI 组件
+src/views/        顾客端与管理端页面
+src/lib/          Supabase API、认证和业务工具
+supabase/         Schema、RLS、RPC 与 Storage policy
+docs/             上线与运维说明
+scripts/          开发、构建和预览入口
+```
 
-- 用户注册：真实姓名、邮箱、电话、密码
-- 用户登录后直接下单，不再手填姓名
-- 我的订单自动读取当前登录账号的当日订单
-- 支付页展示 RM 与折算 CNY
-- 付款截图上传到 Supabase Storage
-- 管理员登录后查看订单、付款记录、菜单和日报
-- 管理员修改订单状态、菜单、系统配置
-- DailyStats 自动汇总
-
-## 目录说明
-
-- [src/App.tsx](/C:/project/UTM&KS launch/src/App.tsx)：主界面和核心状态管理
-- [src/views/UserView.tsx](/C:/project/UTM&KS launch/src/views/UserView.tsx)：用户端视图
-- [src/views/AdminView.tsx](/C:/project/UTM&KS launch/src/views/AdminView.tsx)：管理员端视图
-- [src/views/LaunchView.tsx](/C:/project/UTM&KS launch/src/views/LaunchView.tsx)：上线方案页面
-- [src/lib/liveApi.ts](/C:/project/UTM&KS launch/src/lib/liveApi.ts)：Supabase 读写接口
-- [supabase/schema.sql](/C:/project/UTM&KS launch/supabase/schema.sql)：数据库结构、RLS、RPC 和存储策略
-- [docs/launch-plan.md](/C:/project/UTM&KS launch/docs/launch-plan.md)：部署落地说明
-
-## 部署建议
-
-- 前端：Cloudflare Pages / Vercel / Netlify
-- 数据库：Supabase Postgres
-- 文件存储：Supabase Storage
-- 认证：Supabase Auth
-
-部署时把 `VITE_SUPABASE_URL` 和 `VITE_SUPABASE_ANON_KEY` 配到平台环境变量即可。
+更多上线细节见 [`docs/launch-plan.md`](docs/launch-plan.md)。
